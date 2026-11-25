@@ -1,0 +1,8 @@
+# Metin dosyaları depoda ve çalışma kopyasında LF (eski depolardaki gibi; bazı testler satır sonuna duyarlı)
+* text=auto eol=lf
+
+# Windows betikleri çalışma kopyasında CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.vbs text eol=crlf
+*.ps1 text eol=crlf
