@@ -23,3 +23,6 @@ exports/
 
 # Klasordeki DocumentX simgesi (tam yol tutar; DocumentX.vbs her acilista yeniden yazar)
 /DocumentX.lnk
+
+# DocumentX.vbs: bu bilgisayardaki veri klasörü (kılavuzlar); yerel ayar, depoya girmez
+veri-klasoru.txt

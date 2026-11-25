@@ -32,7 +32,8 @@ function writeShot(name, data) {
 
 function collectErrors(page) {
   const errors = [];
-  page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
+  // Adres de eklenir: "Failed to load resource" iletisinde adres yoktur, favicon süzgeci adrese bakar (Edge favicon ister)
+  page.on('console', m => { if (m.type() === 'error') errors.push(m.text() + (m.location() && m.location().url ? ' @ ' + m.location().url : '')); });
   page.on('pageerror', e => errors.push('pageerror: ' + e.message));
   return errors;
 }

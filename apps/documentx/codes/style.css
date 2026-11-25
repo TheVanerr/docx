@@ -5,20 +5,24 @@
 }
 
 :root {
-  --bg-primary: #0f1117;
-  --bg-secondary: #161b27;
-  --bg-tertiary: #1e2538;
-  --bg-card: #1a2035;
-  --accent: #4a7cf7;
-  --accent-hover: #5d8df8;
-  --accent-soft: rgba(74, 124, 247, 0.12);
-  --text-primary: #e8eaf0;
-  --text-secondary: #8892a4;
-  --text-muted: #4a5568;
-  --border: #252d3d;
-  --border-light: #2d3748;
-  --success: #38a169;
+  /* Arayüz renkleri: DOCX ortak teması (ortak/tema.css ile aynı değerler; koyu grafit, Dolfin kırmızısı).
+     Yalnız arayüzü boyar; basılan / dışa aktarılan kılavuz bu değişkenleri kullanmaz. */
+  --bg-primary: #14161b;
+  --bg-secondary: #1b1e25;
+  --bg-tertiary: #23272f;
+  --bg-card: #2b3039;
+  --accent: #d40000;
+  --accent-hover: #ff0000;
+  --accent-soft: rgba(255, 0, 0, 0.14);
+  --text-primary: #e8eaef;
+  --text-secondary: #aab0bc;
+  --text-muted: #8e96a6;
+  --border: #2f343e;
+  --border-light: #3a404b;
+  --success: #3fb56f;
   --danger: #e53e3e;
+  /* Kılavuzun kendi vurgu rengi (içindekiler numarası, başlık çizgisi, alıntı, bağlantı): PDF ve önizlemede değişmez */
+  --doc-accent: #4a7cf7;
   --navbar-h: 56px;
   --titlebar-h: 32px;
   --radius: 8px;
@@ -56,18 +60,22 @@ html, body {
   min-width: 0;
 }
 
+.app-logo { display: flex; align-items: center; }
+.app-logo img { height: 18px; display: block; }
+
 .app-title {
   font-size: 12px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  letter-spacing: 0.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-/* ── NAVBAR ── */
+/* ── NAVBAR ── (alt kenarda Dolfin kırmızısı çizgi: diğer DOCX uygulamalarının üst çubuğu gibi) */
 .navbar {
   height: var(--navbar-h);
   background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 2px solid var(--accent-hover);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -132,7 +140,7 @@ html, body {
 .view-btn.active {
   background: var(--accent);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(74, 124, 247, 0.35);
+  box-shadow: 0 2px 8px rgba(212, 0, 0, 0.35);
 }
 
 .select-label {
@@ -289,7 +297,7 @@ html, body {
 .lang-btn.active {
   background: var(--accent);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(74, 124, 247, 0.35);
+  box-shadow: 0 2px 8px rgba(212, 0, 0, 0.35);
 }
 
 .lang-btn.lang-disabled {
@@ -872,7 +880,7 @@ html, body {
 }
 .toc-num { font-weight: 700; color: #1a2540; flex-shrink: 0; min-width: 20px; }
 .toc-l1 { font-weight: 700; font-size: 14px; color: #1a2540; margin-top: 4px; }
-.toc-l1 .toc-num { color: var(--accent); }
+.toc-l1 .toc-num { color: var(--doc-accent); }
 .toc-label { flex-shrink: 1; }
 .toc-leader {
   flex: 1;
@@ -889,7 +897,7 @@ html, body {
   color: #1a1a2e;
   margin-bottom: 6px;
   padding-bottom: 12px;
-  border-bottom: 3px solid var(--accent);
+  border-bottom: 3px solid var(--doc-accent);
   line-height: 1.25;
 }
 
@@ -934,7 +942,7 @@ html, body {
 .md-quote {
   margin: 0 0 12px;
   padding: 8px 16px;
-  border-left: 4px solid var(--accent);
+  border-left: 4px solid var(--doc-accent);
   background: #f4f7ff;
   color: #33415c;
   font-style: italic;
@@ -990,7 +998,7 @@ html, body {
 }
 .md-table tr:nth-child(even) td { background: #f8fafc; }
 
-.page-content a { color: var(--accent); text-decoration: none; }
+.page-content a { color: var(--doc-accent); text-decoration: none; }
 .page-content a:hover { text-decoration: underline; }
 
 /* Markdown görselleri — içerik fotoğrafları yatayda ortalı; tablo ikonları ayrı */

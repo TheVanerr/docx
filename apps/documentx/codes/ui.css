@@ -107,7 +107,7 @@ body.qc-open .qc-panel {
   cursor: pointer;
 }
 .sb-tab:hover { background: var(--bg-tertiary); color: var(--text-primary); }
-.sb-tab.active { background: var(--accent-soft); color: var(--accent-hover); }
+.sb-tab.active { background: var(--accent); color: #fff; } /* DOCX ortak sekmesi gibi: kırmızı zemin, beyaz yazı */
 
 .sb-body, .qc-body {
   flex: 1;

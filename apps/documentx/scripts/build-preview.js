@@ -222,6 +222,10 @@ function main() {
 
   /* ── index.html: Artifact iskeletine uygun gövde ── */
   const html = fs.readFileSync(path.join(CODES, 'index.html'), 'utf8');
+  // Sayfadaki görseller (ör. üst çubuktaki Dolfin logosu: icon/dolfin.png)
+  for (const m of html.matchAll(/<img\b[^>]*\ssrc="(?![a-z][a-z0-9+.-]*:|\/)([^"]+)"/gi)) {
+    if (fs.existsSync(path.join(CODES, m[1]))) copyApp(m[1]);
+  }
   const links = (html.match(/<link rel="stylesheet"[^>]*>/g) || []).join('\n');
   const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
   if (!bodyMatch) throw new Error('codes/index.html gövdesi bulunamadı');

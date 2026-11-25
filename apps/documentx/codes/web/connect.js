@@ -58,8 +58,11 @@ const DXConnect = (() => {
     readyResolve();
   }
 
-  /* Uygulamanın kendi DocumentX klasörü (file:// adresinden): seçilecek klasör budur. */
+  /* Seçilecek DocumentX klasörü. Başlatıcı (DocumentX.vbs) veri klasörünü adreste verir (?kok=...): program kodu
+     DOCX deposundan, kılavuzlar ayrı veri klasöründen açılır. Verilmemişse file:// adresinden codes/ klasörünün üstü. */
   function ownRoot() {
+    const kok = new URLSearchParams(location.search).get('kok');
+    if (kok) return kok;
     if (location.protocol !== 'file:') return '';
     const m = decodeURIComponent(location.pathname).replace(/^\/(?=[A-Za-z]:)/, '').match(/^(.*)\/codes\/index\.html$/i);
     return m ? m[1].replace(/\//g, '\\') : '';
