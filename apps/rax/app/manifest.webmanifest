@@ -1,0 +1,21 @@
+{
+  "id": "./?pwa=dolfin-rax-risk-analizi-44cce8b4-4d1d-4fba-98c4-af3c1b3731f8",
+  "name": "R&AX Risk Analizi — Dolfin",
+  "short_name": "Risk Analizi",
+  "description": "Dolfin endüstriyel parça yıkama makineleri için risk değerlendirme raporları: EN ISO 12100, EN ISO 13849-1, EN 60204-1, gürültü, termografi.",
+  "lang": "tr",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "any",
+  "background_color": "#14161b",
+  "theme_color": "#1b1e25",
+  "categories": ["business", "productivity", "utilities"],
+  "icons": [
+    { "src": "assets/pwa/ikon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/pwa/ikon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/pwa/ikon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
