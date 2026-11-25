@@ -1,0 +1,23 @@
+{
+  "id": "ornek-c",
+  "seriNo": "ORNEK-C",
+  "firma": "ÖRNEK",
+  "model": "KBN 2B 1650",
+  "kodlar": [
+    "PE02",
+    "FE01",
+    "FE02",
+    "R06",
+    "PS07",
+    "R07",
+    "SW18",
+    "SS01",
+    "PRS01",
+    "R21",
+    "TC02",
+    "TC05",
+    "LS04",
+    "V48",
+    "V49"
+  ]
+}

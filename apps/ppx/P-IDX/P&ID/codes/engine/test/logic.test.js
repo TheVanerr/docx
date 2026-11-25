@@ -576,8 +576,9 @@ test('kapak switchi silinince ona bağlı hatlar da gider', () => {
 /* ─── Makine kaydından taslak ──────────────────────────── */
 
 test('taslak: makine kaydındaki her kod çizime girer, kayıtta olmayan grup parçası çıkarılır', () => {
-  for (const file of ['0326053', '0426052', '0326056', '1726050']) {
-    const machine = require(`../../../../ML/kayitlar/${file}.json`);
+  // Gerçek makine kayıtlarının kod listeleri; müşteri bilgisi çıkarılmış örnekler (açık depo)
+  for (const file of ['ornek-a', 'ornek-b', 'ornek-c', 'ornek-d']) {
+    const machine = require(`./fixtures/makine-kayitlari/${file}.json`);
     const drawing = Model.createDrawing('Test');
     const res = Presets.buildDraft(drawing, machine.kodlar, { lang: 'tr' });
     const tags = [...Model.usedTags(drawing).keys()];
@@ -595,8 +596,8 @@ test('taslak: makine kaydındaki her kod çizime girer, kayıtta olmayan grup pa
   }
 });
 
-test('taslak: 0326053 kaydında 2. ve 3. tank kurulur, kilitlemeler yazılır, PE04 dizilir', () => {
-  const machine = require('../../../../ML/kayitlar/0326053.json');
+test('taslak: örnek A kaydında 2. ve 3. tank kurulur, kilitlemeler yazılır, PE04 dizilir', () => {
+  const machine = require('./fixtures/makine-kayitlari/ornek-a.json');
   const drawing = Model.createDrawing('Test');
   const res = Presets.buildDraft(drawing, machine.kodlar, { lang: 'tr' });
   assert.equal(res.tanks, 2);
