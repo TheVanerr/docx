@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SoftwareX</title>
+  <meta name="description" content="PLC/HMI yazılım dokümanlarını (SOFTWAREX klasöründeki HTML'ler) gösterir.">
+  <meta name="theme-color" content="#1b1e25">
+  <link rel="icon" href="simge.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../ortak/tema.css">
+  <link rel="stylesheet" href="softwarex.css">
+</head>
+<body>
+  <header class="topbar">
+    <span class="tb-logo" aria-hidden="true"><img src="../../ortak/dolfin.png" alt=""></span>
+    <span class="tb-ad">SOFTWAREX</span>
+    <nav class="sekmeler" role="tablist" aria-label="Belgeler" id="sekmeler"></nav>
+    <div class="tb-spacer"></div>
+    <span class="cip" id="bilgi" role="status" hidden></span>
+    <select id="dosyaSec" class="secim" title="Bu sekmede açılacak HTML" aria-label="Bu sekmede açılacak HTML" hidden></select>
+    <button type="button" class="btn btn-sm" id="yenile" title="Klasörü ve açık belgeyi yeniden oku (yapay zekâ güncellediyse)" hidden>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Yenile
+    </button>
+    <button type="button" class="btn btn-sm" id="klasorDegistir" title="Başka bir klasör seç" hidden>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+      <span id="klasorAdi"></span>
+    </button>
+  </header>
+
+  <div id="sahne">
+    <section class="ekran" id="ekranBagla" hidden>
+      <div class="panel">
+        <h1>SoftwareX</h1>
+        <p class="muted">PLC/HMI yazılım dokümanlarını gösterir. Belgeler SOFTWAREX klasöründeki betiklerle (yapay zekâ) üretilir; burada yalnız okunur.</p>
+        <ul class="belge-listesi">
+          <li><strong>Teknik doküman</strong> <span>Yazılım Dokümantasyonu.html · teknik ve adresli: sizin için</span></li>
+          <li><strong>Servis</strong> <span>Servis.html · kurulum ve servis personeli, servis şifrelerini içerir</span></li>
+          <li><strong>Kullanım bilgileri</strong> <span>KKOut.html · müşteri: kullanım kılavuzunun PLC bölümü</span></li>
+          <li><strong>Denetim raporu</strong> <span>Rapor.html · PLC yazılımcısı (detaylı) ve işletme (sade)</span></li>
+        </ul>
+        <button type="button" class="btn btn-primary" id="klasorSec">SOFTWAREX klasörünü seç</button>
+        <p class="ipucu">Klasör yalnız bu bilgisayarda okunur, hiçbir yere yüklenmez. Tarayıcı izin sorduğunda "Her ziyarette izin ver" seçeneği varsa onu seçin; sonraki açılışlarda sorulmaz.</p>
+      </div>
+    </section>
+
+    <section class="ekran" id="ekranIzin" hidden>
+      <div class="panel">
+        <h1>Klasöre yeniden izin verin</h1>
+        <p class="muted">SoftwareX en son <strong id="izinKlasor"></strong> klasörünü gösteriyordu. Tarayıcı, klasörü okumak için bu oturumda yeniden izin istiyor.</p>
+        <div class="dugmeler">
+          <button type="button" class="btn btn-primary" id="izinVer">İzin ver ve aç</button>
+          <button type="button" class="btn" id="baskaKlasor">Başka klasör seç</button>
+        </div>
+        <p class="ipucu" id="izinDurum" role="status" hidden></p>
+      </div>
+    </section>
+
+    <section class="ekran" id="ekranMesaj" hidden>
+      <div class="panel">
+        <h1 id="mesajBaslik"></h1>
+        <p class="muted" id="mesajMetin"></p>
+        <div class="dugmeler dikey" id="mesajListe" hidden></div>
+      </div>
+    </section>
+  </div>
+
+  <script src="sx-cekirdek.js"></script>
+  <script src="softwarex.js"></script>
+</body>
+</html>

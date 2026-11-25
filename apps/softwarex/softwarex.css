@@ -1,0 +1,46 @@
+/* SoftwareX: ortak temanın (../../ortak/tema.css) üstüne yalnız görüntüleyiciye özgü kurallar. */
+
+body { display: flex; flex-direction: column; }
+
+.tb-logo { cursor: default; }
+.tb-logo:hover { background: none; }
+
+.secim {
+  max-width: 300px;
+  min-width: 0;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 5px 8px;
+  font-size: 12px;
+}
+
+#klasorAdi { max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
+
+/* Belgeler çerçevede ve açık kalır; sekme değişince durum kaybolmaz */
+#sahne { position: relative; flex: 1; min-height: 0; }
+#sahne > iframe.belge {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  border: 0; background: #fff; visibility: hidden;
+}
+#sahne > iframe.belge.acik { visibility: visible; }
+
+.ekran { position: absolute; inset: 0; overflow: auto; display: flex; justify-content: center; align-items: flex-start; padding: 48px 16px; }
+.ekran .panel { width: 100%; max-width: 660px; font-size: 14px; line-height: 1.5; }
+.ekran h1 { font-size: 20px; font-weight: 600; margin: 0 0 8px; }
+.ekran p { margin: 0 0 14px; }
+.ipucu { margin-top: 14px !important; font-size: 12.5px; color: var(--faint); }
+.dugmeler { display: flex; flex-wrap: wrap; gap: 8px; }
+.dugmeler.dikey { flex-direction: column; align-items: stretch; }
+.dugmeler.dikey .btn { justify-content: flex-start; white-space: normal; text-align: left; }
+
+.belge-listesi { list-style: none; margin: 0 0 18px; padding: 0; border-top: 1px solid var(--line); }
+.belge-listesi li { padding: 9px 2px; border-bottom: 1px solid var(--line); }
+.belge-listesi strong { display: inline-block; min-width: 150px; }
+.belge-listesi span { color: var(--muted); font-size: 13px; }
+
+@media (max-width: 760px) {
+  .tb-ad { display: none; }
+  .secim { max-width: 34vw; }
+  #klasorAdi { display: none; }
+}

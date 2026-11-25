@@ -1,0 +1,8 @@
+{
+  "name": "softwarex",
+  "private": true,
+  "description": "SoftwareX: PLC/HMI yazılım dokümanlarını (SOFTWAREX klasöründeki HTML'ler) gösteren görüntüleyici",
+  "scripts": {
+    "test": "node --test test/sx.test.js"
+  }
+}
