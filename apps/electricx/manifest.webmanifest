@@ -1,0 +1,25 @@
+{
+  "id": "electricx-aceb3882-e23f-46b0-840e-3b84e517a24c",
+  "name": "ELECTRICX",
+  "short_name": "ELECTRICX",
+  "description": "Elektrik kutusu malzeme listesi, pano etiketi ve şema çevirisi tek uygulamada.",
+  "lang": "tr",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#14161b",
+  "theme_color": "#1b1e25",
+  "categories": ["productivity", "utilities", "business"],
+  "icons": [
+    { "src": "ortak/varliklar/ikon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "ortak/varliklar/ikon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "ortak/varliklar/ikon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "ortak/varliklar/ikon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Malzeme Listesi", "url": "./#kutu", "icons": [{ "src": "ortak/varliklar/ikon-192.png", "sizes": "192x192", "type": "image/png" }] },
+    { "name": "Pano Etiketi", "url": "./#etiket", "icons": [{ "src": "ortak/varliklar/ikon-192.png", "sizes": "192x192", "type": "image/png" }] },
+    { "name": "Şema Çeviri", "url": "./#sema", "icons": [{ "src": "ortak/varliklar/ikon-192.png", "sizes": "192x192", "type": "image/png" }] }
+  ]
+}

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Maskelenebilir ikon (Android ve iOS ana ekranı): zemin kenara kadar, çizim güvenli alanın (orta %80) içinde. -->
+  <defs>
+    <linearGradient id="zemin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2b3039"/>
+      <stop offset="1" stop-color="#14161b"/>
+    </linearGradient>
+    <linearGradient id="simsek" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#ff3b30"/>
+      <stop offset="1" stop-color="#c40000"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#zemin)"/>
+  <g transform="translate(256 256) scale(0.8) translate(-256 -256)">
+    <g fill="none" stroke="#5a6170" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M356 132 L376 152 H440" stroke-width="12"/>
+      <path d="M156 380 L136 360 H72" stroke-width="12"/>
+      <circle cx="340" cy="116" r="17" stroke-width="10"/>
+      <circle cx="172" cy="396" r="17" stroke-width="10"/>
+    </g>
+    <g fill="#5a6170">
+      <circle cx="446" cy="152" r="15"/>
+      <circle cx="66" cy="360" r="15"/>
+    </g>
+    <path d="M296 56 L132 292 H244 L212 456 L380 212 H268 Z" fill="url(#simsek)" stroke="#ff5a50" stroke-width="6" stroke-linejoin="round"/>
+  </g>
+</svg>

@@ -1,0 +1,76 @@
+/* Malzeme Listesi: proje kartları, pafta görünümü, yeni proje penceresi. Pafta kâğıt olarak açık renk kalır. */
+
+.ara-satir { padding: 14px 40px 0; max-width: 560px; }
+.project-card.bekliyor::before { background: var(--warn); }
+.pc-chip.bekliyor { background: #fff3d6; color: #8a5a00; font-weight: 600; }
+
+/* Pano modelleri ve kurallar sayfaları */
+.home-page iframe { flex: 1; min-height: 0; width: 100%; border: 0; background: var(--bg); }
+
+/* Kaynaklar */
+.kaynak-sayfa { padding: 18px 40px; overflow: auto; flex: 1; min-height: 0; max-width: 900px; }
+.kaynak-ust { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.kaynak-ust h2 { margin: 0; font-size: 14px; font-weight: 600; }
+.dosya-liste { display: flex; flex-direction: column; gap: 4px; }
+.dosya-satir { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 12px; padding: 7px 10px; background: var(--panel-2); border-radius: var(--radius); }
+.dosya-ad { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dosya-bilgi { color: var(--muted); font-size: 11.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.dosya-eylem { display: flex; gap: 6px; }
+.bos-yazi { color: var(--muted); padding: 12px 2px; }
+
+/* Pafta görünümü */
+.gorunum { height: 100%; display: flex; flex-direction: column; min-height: 0; }
+.gorunum-govde { flex: 1; min-height: 0; display: grid; grid-template-columns: 264px minmax(0, 1fr); }
+.gorunum-govde.kapali { grid-template-columns: 44px minmax(0, 1fr); }
+.yan { display: flex; flex-direction: column; min-height: 0; background: var(--panel); border-right: 1px solid var(--line); }
+.yan-ust { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 6px 8px 6px 14px; border-bottom: 1px solid var(--line); }
+.yan-ad { flex: 1; min-width: 0; color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.yan-dugme { flex: none; width: 28px; height: 28px; background: transparent; border: 1px solid var(--line); border-radius: var(--radius); cursor: pointer; font-size: 15px; line-height: 1; }
+.yan-dugme:hover { background: var(--panel-3); }
+.yan-liste { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 0 8px; }
+.yan-oge { display: block; width: 100%; padding: 7px 14px; background: transparent; border: 0; border-left: 3px solid transparent; color: var(--text); text-align: left; cursor: pointer; }
+.yan-oge b { display: block; font-size: 13.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.yan-oge span { display: block; margin-top: 1px; color: var(--muted); font-size: 11.5px; }
+.yan-oge:hover { background: var(--panel-3); }
+.yan-oge[aria-current="page"] { background: var(--dolfin-soft); border-left-color: var(--dolfin); }
+.gorunum-govde.kapali .yan-ad, .gorunum-govde.kapali .yan-liste { display: none; }
+.gorunum-govde.kapali .yan-ust { padding: 6px 8px; justify-content: center; }
+
+.pafta-alan { min-width: 0; min-height: 0; background: var(--canvas); position: relative; }
+.pafta-alan iframe { display: block; width: 100%; height: 100%; border: 0; background: var(--canvas); }
+.pafta-bos { height: 100%; overflow: auto; display: flex; align-items: flex-start; justify-content: center; padding: 40px 16px; }
+.pafta-kart { width: min(680px, 100%); background: var(--panel); border-top: 3px solid var(--warn); border-radius: 8px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; }
+.pafta-kart h2 { margin: 0; font-size: 15px; }
+.pafta-kart p { margin: 0; color: var(--muted); line-height: 1.45; }
+.talimat { margin: 0; padding: 10px 12px; background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); font: 12px/1.5 ui-monospace, 'Cascadia Mono', Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+.pafta-eylem { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Yeni proje penceresi */
+.modal.genis { width: 640px; }
+.yeni-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; }
+.yeni-grid .tam { grid-column: 1 / -1; }
+.model-bilgi { display: flex; flex-wrap: wrap; gap: 4px 6px; }
+.model-etiket { padding: 2px 8px; background: var(--panel-3); border-radius: 10px; font-size: 11px; color: #c6cbd5; }
+.model-etiket b { font-weight: 600; color: var(--text); }
+.secenekler { display: flex; flex-direction: column; gap: 4px; }
+.secenek { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 8px; align-items: start; padding: 6px 9px; background: var(--panel-2); border-radius: var(--radius); cursor: pointer; }
+.secenek input { accent-color: var(--dolfin); margin: 2px 0 0; }
+.secenek small { display: block; color: var(--muted); font-size: 11px; line-height: 1.3; }
+.kural-no { color: var(--muted); font-size: 10.5px; font-weight: 600; white-space: nowrap; }
+.radyo-satir { display: flex; gap: 14px; }
+.radyo-satir label { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--text); cursor: pointer; }
+.radyo-satir input { accent-color: var(--dolfin); margin: 0; }
+.hata-yazi { color: #ff8585; font-size: 12px; }
+
+@media (max-width: 760px) {
+  .ara-satir { padding: 12px 16px 0; }
+  .kaynak-sayfa { padding: 14px 16px; }
+  .gorunum-govde, .gorunum-govde.kapali { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
+  .yan-dugme, .yan-ad { display: none; }
+  .yan-ust { display: none; }
+  .gorunum-govde.kapali .yan-liste { display: flex; }
+  .yan-liste { display: flex; overflow-x: auto; overflow-y: hidden; padding: 0 8px; }
+  .yan-oge { flex: none; width: auto; padding: 5px 10px; }
+  .tb-project { min-width: 0; }
+  .yeni-grid { grid-template-columns: minmax(0, 1fr); }
+}

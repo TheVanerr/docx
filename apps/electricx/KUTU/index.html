@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Malzeme Listesi</title>
+  <link rel="icon" href="../ortak/varliklar/ikon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../ortak/tema.css">
+  <link rel="stylesheet" href="kutu.css">
+</head>
+<body>
+  <section id="home" class="home">
+    <div class="home-bar">
+      <img src="../ortak/varliklar/dolfin.png" alt="Dolfin" class="home-logo">
+      <div class="home-title">
+        <h1>Elektrik Kutusu Malzeme Listesi</h1>
+        <p>KBN 1B · KBN 2B · LYM</p>
+      </div>
+      <div class="home-actions">
+        <button type="button" class="btn btn-primary" id="btnYeni">+ Yeni Proje</button>
+      </div>
+    </div>
+    <nav class="home-nav">
+      <button type="button" class="home-tab active" data-sayfa="projeler">Projeler <span id="projeSay" class="home-count"></span></button>
+      <button type="button" class="home-tab" data-sayfa="modeller">Pano Modelleri</button>
+      <button type="button" class="home-tab" data-sayfa="kurallar">Kurallar</button>
+      <button type="button" class="home-tab" data-sayfa="kaynaklar">Kaynaklar <span id="kaynakSay" class="home-count"></span></button>
+      <div class="tb-spacer"></div>
+      <a class="home-link" id="yeniSekme" href="kurallar/panolar.html" target="_blank" rel="noopener" hidden>Yeni sekmede aç</a>
+    </nav>
+
+    <div id="s-projeler" class="home-page">
+      <div class="ara-satir"><input type="search" id="projeAra" class="search" placeholder="Seri no, firma veya model ara…" aria-label="Proje ara"></div>
+      <div id="projeListe" class="project-list"></div>
+    </div>
+    <div id="s-modeller" class="home-page hidden"></div>
+    <div id="s-kurallar" class="home-page hidden"></div>
+    <div id="s-kaynaklar" class="home-page hidden">
+      <div class="kaynak-sayfa">
+        <div class="kaynak-ust">
+          <h2>Kaynak dosyalar</h2>
+          <button type="button" class="btn btn-sm" id="kaynakEkle">Dosya ekle</button>
+          <input type="file" id="kaynakDosya" multiple hidden>
+        </div>
+        <div id="kaynakListe" class="dosya-liste"></div>
+      </div>
+    </div>
+  </section>
+
+  <div id="gorunum" class="gorunum hidden">
+    <header class="topbar">
+      <button type="button" class="btn btn-sm" id="geri" title="Proje listesine dön">‹ Projeler</button>
+      <div class="tb-project">
+        <strong id="gAd"></strong>
+        <span id="gAlt" class="save-state"></span>
+      </div>
+      <div class="tb-spacer"></div>
+      <div class="tb-group">
+        <button type="button" class="btn btn-sm" id="gDosyalar">Dosyalar</button>
+        <button type="button" class="btn btn-sm" id="gGuncelle">Pafta yükle</button>
+        <button type="button" class="btn btn-sm" id="gYeniSekme">Yeni sekmede aç</button>
+        <input type="file" id="paftaDosya" accept=".html,.htm,text/html" hidden>
+      </div>
+    </header>
+    <div class="gorunum-govde">
+      <aside class="yan">
+        <div class="yan-ust">
+          <span class="yan-ad">Projeler</span>
+          <button type="button" class="yan-dugme" id="yanDugme" aria-label="Listeyi daralt" title="Listeyi daralt">‹</button>
+        </div>
+        <nav class="yan-liste" id="yanListe" aria-label="Projeler"></nav>
+      </aside>
+      <main class="pafta-alan" id="paftaAlan"></main>
+    </div>
+  </div>
+
+  <div id="modalRoot"></div>
+  <div id="toast" class="toast hidden" role="status"></div>
+
+  <script src="../ortak/ex-db.js"></script>
+  <script src="../ortak/ex-github.js"></script>
+  <script src="../ortak/ex-aktar.js"></script>
+  <script src="../ortak/ex-boot.js"></script>
+  <script src="kurallar/modeller.js"></script>
+  <script src="kutu.js"></script>
+</body>
+</html>
