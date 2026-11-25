@@ -1,0 +1,21 @@
+# Bu depo HERKESE AÇIKTIR: yalnız program kodu. Müşteri verisi, anahtar ve büyük dosya girmez.
+# Veri: TheVanerr/docx-veri (gizli) · Büyük dosyalar: TheVanerr/docx-arsiv (gizli, Release)
+
+node_modules/
+_site/
+__pycache__/
+*.pyc
+.env
+*.log
+Thumbs.db
+desktop.ini
+Desktop.ini
+.DS_Store
+
+# Büyük / müşteriye ait dosya türleri hiçbir uygulama klasöründe izlenmez
+*.step
+*.STEP
+*.stp
+*.STP
+*.brep
+*.npy
