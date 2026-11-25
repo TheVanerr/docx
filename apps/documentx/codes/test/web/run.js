@@ -107,6 +107,34 @@ async function renderTests(browser, base) {
 }
 
 /* ── 2) Arayüz testleri ── */
+/* ── Klasör seçimi: üst klasör seçilirse içindeki DocumentX bulunur; program klasörü açık uyarı verir ── */
+async function folderPickTests(browser, base) {
+  section('Klasör seçimi');
+  const page = await browser.newPage({ viewport: { width: 1200, height: 800 } });
+  const errors = collectErrors(page);
+  await page.goto(base + '/codes/index.html');
+  await page.waitForSelector('#dxConnect', { timeout: 15000 });
+  const r = await page.evaluate(async () => {
+    const root = await navigator.storage.getDirectory();
+    const dir = async (rel) => { let d = root; for (const p of rel.split('/')) d = await d.getDirectoryHandle(p, { create: true }); return d; };
+    const file = async (d, name) => { const w = await (await d.getFileHandle(name, { create: true })).createWritable(); await w.write('x'); await w.close(); };
+    const program = await dir('secim/program');
+    await dir('secim/program/codes');
+    await file(program, 'DocumentX.vbs');
+    let programError = '';
+    try { await DXConnect.mount(program); } catch (e) { programError = e.message; }
+    await dir('secim/ust/DocumentX/projects');
+    await dir('secim/ust/docx');
+    let parentError = '';
+    try { await DXConnect.mount(await dir('secim/ust')); } catch (e) { parentError = e.message; }
+    return { programError, parentError, connected: !document.getElementById('dxConnect') };
+  });
+  check('program klasörü seçilince ne seçileceği yazar', /program klasörü/.test(r.programError), r.programError);
+  check('üst klasör seçilince içindeki DocumentX veri klasörü bağlanır', !r.parentError && r.connected, JSON.stringify(r));
+  check('klasör seçimi: konsolda hata yok', errors.length === 0, errors.join(' | '));
+  await page.close();
+}
+
 async function uiTests(browser, base) {
   section('Arayüz (index.html, fixture çalışma klasörü)');
   const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
@@ -629,6 +657,7 @@ async function previewTests(browser) {
   const timer = setTimeout(() => { console.error('Zaman aşımı (300 sn)'); process.exit(2); }, 300000);
   try {
     await renderTests(browser, base);
+    await folderPickTests(browser, base);
     const webHtml = await uiTests(browser, base);
     await webManualTests(browser, webHtml);
     await nativeGitTests(browser);

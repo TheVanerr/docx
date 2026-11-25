@@ -22,16 +22,35 @@ const DXConnect = (() => {
     const entries = await backend.list('');
     const looksLikeProjects = entries.some(e => e.kind === 'directory' && /^\d{7}-|^(knv|vdl|kbn|lym|mst|pyt|rts|ult)$/i.test(e.name));
     if (looksLikeProjects) return 'Bu klasör projects/ klasörünün kendisi görünüyor. Bir üstteki DocumentX klasörünü seçin.';
-    return 'Seçilen klasörde projects/ yok. İçinde projects/, templates/ ve assets/ bulunan DocumentX klasörünü seçin.';
+    const programFolder = entries.some(e => e.kind === 'directory' && e.name === 'codes') && entries.some(e => /^DocumentX\.vbs$/i.test(e.name));
+    if (programFolder) return 'Bu, DocumentX\'in program klasörü (docx\\apps\\documentx); kılavuzlar burada değil. Kılavuzların durduğu veri klasörünü seçin (ör. Masaüstü\\DOCX\\DocumentX, içinde projects/ var).';
+    return 'Seçilen klasörde projects/ yok. Kılavuzların durduğu DocumentX veri klasörünü seçin (içinde projects/, templates/ ve assets/ var; ör. Masaüstü\\DOCX\\DocumentX).';
+  }
+
+  /* Üst klasör seçildiyse (ör. Masaüstü\DOCX) içindeki veri klasörü kullanılır: projects/ içeren alt klasör;
+     birden çoksa adı DocumentX olan. Bulunamazsa seçilen klasör olduğu gibi döner (denetim nedenini yazar). */
+  async function dataFolder(handle) {
+    try { await handle.getDirectoryHandle('projects'); return handle; } catch (e) { /* kökte yok */ }
+    const found = [];
+    try {
+      for await (const [name, h] of handle.entries()) {
+        if (h.kind !== 'directory' || name.startsWith('.')) continue;
+        try { await h.getDirectoryHandle('projects'); found.push(h); } catch (e) { /* veri klasörü değil */ }
+      }
+    } catch (e) { return handle; }
+    if (found.length === 1) return found[0];
+    return found.find(h => /^documentx$/i.test(h.name)) || handle;
   }
 
   async function mountHandle(handle, request) {
     const my = ++attempt;
     const current = () => my === attempt;
-    const backend = new DXFS.HandleBackend(handle);
+    let backend = new DXFS.HandleBackend(handle);
     const state = await backend.permission(request);
     if (!current()) return 'Bağlanma denemesi zaman aşımına uğradı.';
     if (state !== 'granted') return 'Klasöre erişim izni verilmedi.';
+    const data = await dataFolder(handle);
+    if (data !== handle) { handle = data; backend = new DXFS.HandleBackend(data); }
     const err = await validate(backend, current);
     if (err) return err;
     await DXFS.saveHandle(handle);
@@ -59,13 +78,15 @@ const DXConnect = (() => {
   }
 
   /* Seçilecek DocumentX klasörü. Başlatıcı (DocumentX.vbs) veri klasörünü adreste verir (?kok=...): program kodu
-     DOCX deposundan, kılavuzlar ayrı veri klasöründen açılır. Verilmemişse file:// adresinden codes/ klasörünün üstü. */
+     DOCX deposundan, kılavuzlar ayrı veri klasöründen açılır. Verilmemişse file:// adresinden codes/ klasörünün üstü;
+     DOCX deposundaki program klasörü (apps/documentx) veri klasörü değildir, onu önermez. */
   function ownRoot() {
     const kok = new URLSearchParams(location.search).get('kok');
     if (kok) return kok;
     if (location.protocol !== 'file:') return '';
     const m = decodeURIComponent(location.pathname).replace(/^\/(?=[A-Za-z]:)/, '').match(/^(.*)\/codes\/index\.html$/i);
-    return m ? m[1].replace(/\//g, '\\') : '';
+    if (!m || /\/apps\/documentx$/i.test(m[1])) return '';
+    return m[1].replace(/\//g, '\\');
   }
 
   function el(tag, attrs, text) {
@@ -89,7 +110,7 @@ const DXConnect = (() => {
     }
     const body = el('div', { class: 'np-body' });
     body.appendChild(el('p', { class: 'dx-connect-lead' },
-      'Kılavuzların bulunduğu DocumentX klasörünü seçin (içinde projects/, templates/ ve assets/ olan klasör).'));
+      'Kılavuzların bulunduğu DocumentX veri klasörünü seçin (içinde projects/, templates/ ve assets/ olan klasör; ör. Masaüstü\\DOCX\\DocumentX). Bir üst klasörü seçerseniz içindeki DocumentX klasörü kullanılır.'));
     const root = ownRoot();
     if (root) {
       const p = el('p', { class: 'dx-connect-path' }, 'Seçilecek klasör: ');
@@ -184,7 +205,7 @@ const DXConnect = (() => {
     /* Testler, önizleme paketi ve gömülü kullanım: hazır bir arka ucu ya da klasör tutamacını bağlar. */
     async mount(handle) {
       const isBackend = [DXFS.HandleBackend, DXFS.ListBackend, DXFS.BundleBackend].some(C => handle instanceof C);
-      const err = await validate(isBackend ? handle : new DXFS.HandleBackend(handle));
+      const err = await validate(isBackend ? handle : new DXFS.HandleBackend(await dataFolder(handle)));
       if (err) throw new Error(err);
       started = Promise.resolve();
       done();
