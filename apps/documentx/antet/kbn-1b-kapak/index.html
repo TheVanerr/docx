@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KBN 1B Kapak Seçenekleri</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Carlito:wght@400;700&display=swap">
+<style>
+/* Düzen: üç A4 kapak yan yana; kapaklar sabit ölçülü (mm) çizilir, JS sütuna sığdırır.
+   Kapak içi değerler codes/doc-content.css > .kapak-a/.kapak-b ile aynı kaynaktan. */
+:root {
+  --bg: #E9EBEE; --fg: #1C1D1F; --muted: #5C6066; --rule: #CDD0D5; --chip: #FFFFFF; --accent: #D40000;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #16171A; --fg: #ECEDEF; --muted: #A2A6AC; --rule: #34373C; --chip: #24262A; --accent: #FF5A5A; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #16171A; --fg: #ECEDEF; --muted: #A2A6AC; --rule: #34373C; --chip: #24262A; --accent: #FF5A5A; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 15px/1.5 'Segoe UI', Calibri, Carlito, Arial, sans-serif;
+  padding-block: 28px 44px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.ust { max-width: 1560px; margin: 0 auto 24px; }
+.ust h1 { margin: 0 0 6px; font-size: 24px; line-height: 1.25; font-weight: 700; text-wrap: balance; }
+.ust p { margin: 0; max-width: 78ch; color: var(--muted); }
+.secenekler {
+  max-width: 1560px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 28px;
+  align-items: start;
+}
+.secenek { margin: 0; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.secenek-bas { display: grid; grid-template-columns: auto 1fr; column-gap: 12px; align-items: baseline; }
+.secenek-no { font-size: 34px; line-height: 1; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+.secenek-bas h2 { margin: 0; font-size: 18px; line-height: 1.25; font-weight: 700; }
+.secenek-bas p { grid-column: 2; margin: 3px 0 0; font-size: 13.5px; color: var(--muted); min-height: 4.5em; }
+.cerceve { position: relative; width: 100%; overflow: hidden; background: #fff; cursor: zoom-in; box-shadow: 0 1px 2px rgba(20, 22, 26, .18), 0 10px 26px rgba(20, 22, 26, .14); }
+.cerceve .sayfa { transform: scale(var(--k, .5)); transform-origin: top left; }
+.buyut {
+  align-self: flex-start;
+  font: inherit; font-size: 13.5px;
+  color: var(--fg); background: var(--chip);
+  border: 1px solid var(--rule); border-radius: 4px;
+  padding: 6px 12px; cursor: pointer;
+}
+.buyut:hover { border-color: var(--muted); }
+.buyut:focus-visible, .kapat:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+dialog#buyuk { border: 0; padding: 0; background: transparent; max-width: none; max-height: none; overflow: visible; }
+dialog#buyuk::backdrop { background: rgba(12, 13, 15, .78); }
+.buyuk-ic { position: relative; overflow: hidden; background: #fff; }
+.buyuk-ic .sayfa { transform: scale(var(--k, 1)); transform-origin: top left; }
+.kapat {
+  position: fixed;
+  top: max(12px, env(safe-area-inset-top, 0px));
+  right: max(12px, env(safe-area-inset-right, 0px));
+  font: 600 14px 'Segoe UI', Arial, sans-serif;
+  color: #fff; background: #1C1D1F; border: 1px solid #5C6066; border-radius: 4px;
+  padding: 7px 12px; cursor: pointer;
+}
+
+/* ── A4 kapak (210 × 297 mm) ── */
+.sayfa {
+  --k-murekkep: #1C1D1F; --k-gri-koyu: #45484D; --k-gri: #7A7E85; --k-cizgi: #D9DBDE; --k-panel: #F3F4F5;
+  --cover-accent: #F60000; --k-kenar: 22mm;
+  position: relative;
+  width: 210mm; height: 297mm;
+  background: #fff;
+  overflow: hidden;
+  font-family: Calibri, Carlito, 'Segoe UI', Arial, sans-serif;
+  color: var(--k-murekkep);
+  line-height: normal;
+  font-variant-ligatures: none; /* PDF metninde "fi" bozulmasın: www.dolfintr.com */
+}
+.sayfa * { box-sizing: border-box; margin: 0; }
+.k-logo { position: absolute; display: block; object-fit: contain; object-position: left center; }
+.k-dil {
+  position: absolute; display: flex; align-items: center; justify-content: center;
+  height: 8mm; min-width: 13mm; padding: 0 2.6mm 0 2.9mm;
+  border: .9pt solid var(--cover-accent);
+  font-size: 11pt; font-weight: 700; letter-spacing: .12em; color: var(--cover-accent);
+}
+.k-tur { font-size: 9pt; font-weight: 600; letter-spacing: .26em; padding-left: .26em; text-transform: uppercase; color: var(--k-gri); }
+.k-model { font-weight: 700; line-height: 1; letter-spacing: -.01em; color: var(--k-murekkep); }
+.k-belge { color: var(--cover-accent); }
+.k-kapsam { font-size: 9.5pt; font-weight: 600; letter-spacing: .06em; color: var(--k-gri-koyu); white-space: nowrap; }
+.k-bilgi { position: absolute; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; border-top: .75pt solid var(--k-cizgi); }
+.k-bilgi > div { padding: 3.5mm 2mm 0; }
+.k-bilgi > div + div { border-left: .75pt solid var(--k-cizgi); }
+.k-bilgi-ad { font-size: 7pt; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--k-gri); margin-bottom: 1.2mm; }
+.k-bilgi-deger { font-size: 11pt; font-weight: 600; color: var(--k-murekkep); }
+.k-bilgi-deger small { display: block; margin-top: .6mm; font-size: 7.5pt; font-weight: 400; color: var(--k-gri); }
+.k-alt { position: absolute; bottom: 14mm; font-size: 7.5pt; color: var(--k-gri); }
+.k-alt b { font-weight: 600; color: var(--k-gri-koyu); }
+
+/* Seçenek 1 — Kapak B düzeni: ULT M200 3B kılavuzuyla aynı */
+.kapak-b .k-panel { position: absolute; left: 0; top: 0; right: 0; height: 158mm; background: var(--k-panel); }
+.kapak-b .k-logo { left: var(--k-kenar); top: 22mm; width: 46mm; height: 16.4mm; }
+.kapak-b .k-dil { right: var(--k-kenar); top: 26.2mm; }
+.kapak-b .k-cizim-kutu { position: absolute; left: var(--k-kenar); right: var(--k-kenar); top: 50mm; bottom: 14mm; display: flex; align-items: flex-end; justify-content: center; }
+.kapak-b .k-cizim { display: block; max-width: 100%; max-height: 100%; object-fit: contain; opacity: .78; }
+.kapak-b .k-serit { position: absolute; left: 0; right: 0; top: 158mm; height: 2mm; background: var(--cover-accent); }
+.kapak-b .k-baslik { position: absolute; left: var(--k-kenar); right: var(--k-kenar); top: 160mm; height: 78mm; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.kapak-b .k-tur { margin-bottom: 3.5mm; }
+.kapak-b .k-model { font-size: 46pt; }
+.kapak-b .k-ayrac { width: 12mm; height: 1.2mm; background: var(--cover-accent); margin: 6mm 0 5mm; }
+.kapak-b .k-belge { font-size: 12pt; font-weight: 600; letter-spacing: .32em; padding-left: .32em; text-transform: uppercase; }
+.kapak-b .k-kapsam { margin-top: 4.5mm; }
+.kapak-b .k-bilgi { left: var(--k-kenar); right: var(--k-kenar); top: 238mm; }
+.kapak-b .k-bilgi > div { text-align: center; }
+.kapak-b .k-bilgi-ad { padding-left: .16em; }
+.kapak-b .k-alt { left: var(--k-kenar); right: var(--k-kenar); display: grid; grid-template-columns: 1fr auto 1fr; gap: 6mm; }
+.kapak-b .k-alt > :last-child { justify-self: end; }
+
+/* Seçenek 2 — Yüksek panel: makine dik olduğu için panel büyür, 3B görünüm öne çıkar */
+.kapak-b.yuksek .k-panel { height: 194mm; }
+.kapak-b.yuksek .k-serit { top: 194mm; }
+.kapak-b.yuksek .k-cizim-kutu { top: 42mm; bottom: 6mm; }
+.kapak-b.yuksek .k-cizim { opacity: 1; mix-blend-mode: multiply; }
+.kapak-b.yuksek .k-baslik { top: 196mm; height: 42mm; justify-content: flex-end; align-items: stretch; text-align: left; padding-bottom: 7.5mm; }
+.kapak-b.yuksek .k-tur { padding-left: 0; margin-bottom: 3mm; white-space: nowrap; }
+.kapak-b.yuksek .k-satir { display: flex; align-items: flex-end; justify-content: space-between; }
+.kapak-b.yuksek .k-sag { display: flex; flex-direction: column; align-items: flex-end; text-align: right; margin-bottom: 1.8mm; }
+.kapak-b.yuksek .k-belge { padding-left: 0; margin-right: -.32em; }
+.kapak-b.yuksek .k-kapsam { margin-top: 2.6mm; }
+
+/* Seçenek 3 — Veri sayfası: sol şerit (Kapak A), iri tipografi, izometrik çizim, kapsam listesi */
+.kapak-c .k-sol-serit { position: absolute; left: 12mm; top: 25mm; bottom: 14mm; width: 1.2mm; background: var(--cover-accent); }
+.kapak-c .k-logo { left: 25mm; top: 25mm; width: 52mm; height: 18.6mm; }
+.kapak-c .k-dil { right: 20mm; top: 30.3mm; }
+.kapak-c .k-baslik { position: absolute; left: 25mm; right: 20mm; top: 60mm; }
+.kapak-c .k-tur { font-size: 10pt; letter-spacing: .16em; padding-left: 0; margin-bottom: 3mm; }
+.kapak-c .k-model { font-size: 80pt; }
+.kapak-c .k-belge { margin-top: 3.5mm; font-size: 20pt; }
+.kapak-c .k-gorsel { position: absolute; right: 20mm; top: 96mm; height: 136mm; width: auto; display: block; }
+.kapak-c .k-liste { position: absolute; left: 25mm; top: 128mm; width: 50mm; }
+.kapak-c .k-liste > div { padding: 3.4mm 0 3.2mm; border-top: .75pt solid var(--k-cizgi); }
+.kapak-c .k-bilgi { left: 25mm; right: 20mm; top: 238mm; }
+.kapak-c .k-bilgi > div:first-child { padding-left: 0; }
+.kapak-c .k-alt { left: 25mm; right: 20mm; display: flex; justify-content: space-between; gap: 6mm; }
+
+@media print {
+  @page { size: A4; margin: 0; }
+  body { background: #fff; padding: 0; }
+  .ust, .secenek-bas, .buyut, dialog { display: none !important; }
+  .secenekler { display: block; max-width: none; }
+  .secenek { display: block; break-after: page; }
+  .cerceve { width: 210mm !important; height: 297mm !important; box-shadow: none; }
+  .cerceve .sayfa { transform: none; }
+}
+@media (prefers-reduced-motion: no-preference) { .buyut { transition: border-color .12s; } }
+</style>
+</head>
+<body>
+
+<header class="ust" lang="tr">
+  <h1>KBN 1B kapak seçenekleri</h1>
+  <p>Üç kapak da aynı bilgileri taşır; görsel ve yerleşim farklıdır. Beğendiğinizin numarasını yazın, onunla devam edelim. Revizyon ve tarih henüz girilmediği için kapaklarda "xx" görünüyor. Görseller KBN 1B OTO P DS 1500 modelinindir.</p>
+</header>
+
+<main class="secenekler" lang="tr">
+
+  <figure class="secenek" id="s1">
+    <div class="secenek-bas">
+      <span class="secenek-no">1</span>
+      <h2>Teknik çizim</h2>
+      <p>ULT M200 3B kılavuzundaki Kapak B ile aynı düzen. Ön ve yan görünüş yan yana; kılavuzlar arasında birlik sağlar.</p>
+    </div>
+    <div class="cerceve">
+      <section class="sayfa kapak-b">
+        <div class="k-panel">
+          <img class="k-logo" src="dolfin.png" alt="Dolfin">
+          <div class="k-dil">TR</div>
+          <div class="k-cizim-kutu"><img class="k-cizim" src="cizim-on-yan.png" alt="KBN 1B ön ve yan görünüş çizimi"></div>
+        </div>
+        <div class="k-serit"></div>
+        <div class="k-baslik">
+          <div class="k-tur">Kabin Tipi Endüstriyel Parça Yıkama Makinesi</div>
+          <div class="k-model">KBN 1B</div>
+          <div class="k-ayrac"></div>
+          <div class="k-belge">Kullanım Kılavuzu</div>
+          <div class="k-kapsam">OTO / MULTI &nbsp;·&nbsp; P / E &nbsp;·&nbsp; DS / DN &nbsp;·&nbsp; 1350 – 2350</div>
+        </div>
+        <div class="k-bilgi">
+          <div><div class="k-bilgi-ad">Revizyon</div><div class="k-bilgi-deger">xx</div></div>
+          <div><div class="k-bilgi-ad">Tarih</div><div class="k-bilgi-deger">xx.xx.xxxx</div></div>
+          <div><div class="k-bilgi-ad">Talimat dili</div><div class="k-bilgi-deger">Türkçe<small>Orijinal talimatlar</small></div></div>
+          <div><div class="k-bilgi-ad">Hazırlayan</div><div class="k-bilgi-deger">Fatih Güral</div></div>
+        </div>
+        <div class="k-alt">
+          <span><b>CNK Elektronik Makine San. A.Ş.</b></span>
+          <span>Organize San. Böl. Orhan Işık Bulv. No:8 · Sincan / Ankara</span>
+          <span>www.dolfintr.com</span>
+        </div>
+      </section>
+    </div>
+    <button class="buyut" type="button" data-hedef="s1">Tam boyut gör</button>
+  </figure>
+
+  <figure class="secenek" id="s2">
+    <div class="secenek-bas">
+      <span class="secenek-no">2</span>
+      <h2>3B görünüm</h2>
+      <p>Kapak B'nin yüksek panelli çeşidi. Dik duran makine panelin tamamını kullanır; ürün öne çıkar, başlık alta iner.</p>
+    </div>
+    <div class="cerceve">
+      <section class="sayfa kapak-b yuksek">
+        <div class="k-panel">
+          <img class="k-logo" src="dolfin.png" alt="Dolfin">
+          <div class="k-dil">TR</div>
+          <div class="k-cizim-kutu"><img class="k-cizim" src="gorunum-3b.jpg" alt="KBN 1B üç boyutlu görünüm, kapak açık"></div>
+        </div>
+        <div class="k-serit"></div>
+        <div class="k-baslik">
+          <div class="k-tur">Kabin Tipi Endüstriyel Parça Yıkama Makinesi</div>
+          <div class="k-satir">
+            <div class="k-model">KBN 1B</div>
+            <div class="k-sag">
+              <div class="k-belge">Kullanım Kılavuzu</div>
+              <div class="k-kapsam">OTO / MULTI &nbsp;·&nbsp; P / E &nbsp;·&nbsp; DS / DN &nbsp;·&nbsp; 1350 – 2350</div>
+            </div>
+          </div>
+        </div>
+        <div class="k-bilgi">
+          <div><div class="k-bilgi-ad">Revizyon</div><div class="k-bilgi-deger">xx</div></div>
+          <div><div class="k-bilgi-ad">Tarih</div><div class="k-bilgi-deger">xx.xx.xxxx</div></div>
+          <div><div class="k-bilgi-ad">Talimat dili</div><div class="k-bilgi-deger">Türkçe<small>Orijinal talimatlar</small></div></div>
+          <div><div class="k-bilgi-ad">Hazırlayan</div><div class="k-bilgi-deger">Fatih Güral</div></div>
+        </div>
+        <div class="k-alt">
+          <span><b>CNK Elektronik Makine San. A.Ş.</b></span>
+          <span>Organize San. Böl. Orhan Işık Bulv. No:8 · Sincan / Ankara</span>
+          <span>www.dolfintr.com</span>
+        </div>
+      </section>
+    </div>
+    <button class="buyut" type="button" data-hedef="s2">Tam boyut gör</button>
+  </figure>
+
+  <figure class="secenek" id="s3">
+    <div class="secenek-bas">
+      <span class="secenek-no">3</span>
+      <h2>Veri sayfası</h2>
+      <p>Kapak A'nın sol şeridi, iri model adı ve beyaz zemin. İzometrik çizimde yalnız acil durdurma ve ikaz lambaları kırmızı; yanda serinin kapsamı.</p>
+    </div>
+    <div class="cerceve">
+      <section class="sayfa kapak-c">
+        <div class="k-sol-serit"></div>
+        <img class="k-logo" src="dolfin.png" alt="Dolfin">
+        <div class="k-dil">TR</div>
+        <div class="k-baslik">
+          <div class="k-tur">Kabin Tipi Endüstriyel Parça Yıkama Makinesi</div>
+          <div class="k-model">KBN 1B</div>
+          <div class="k-belge">Kullanım Kılavuzu</div>
+        </div>
+        <img class="k-gorsel" src="cizim-izometrik.png" alt="KBN 1B izometrik çizim">
+        <div class="k-liste">
+          <div><div class="k-bilgi-ad">Fonksiyon</div><div class="k-bilgi-deger">OTO · MULTI<small>Otomatik · Otomatik ve manuel yıkama</small></div></div>
+          <div><div class="k-bilgi-ad">Kapak</div><div class="k-bilgi-deger">P · E<small>Pnömatik · Elle açılan</small></div></div>
+          <div><div class="k-bilgi-ad">Püskürtme</div><div class="k-bilgi-deger">DS · DN<small>Döner sepet · Döner nozul</small></div></div>
+          <div><div class="k-bilgi-ad">Gövde kodu</div><div class="k-bilgi-deger">1350 – 2350</div></div>
+        </div>
+        <div class="k-bilgi">
+          <div><div class="k-bilgi-ad">Revizyon</div><div class="k-bilgi-deger">xx</div></div>
+          <div><div class="k-bilgi-ad">Tarih</div><div class="k-bilgi-deger">xx.xx.xxxx</div></div>
+          <div><div class="k-bilgi-ad">Talimat dili</div><div class="k-bilgi-deger">Türkçe<small>Orijinal talimatlar</small></div></div>
+          <div><div class="k-bilgi-ad">Hazırlayan</div><div class="k-bilgi-deger">Fatih Güral</div></div>
+        </div>
+        <div class="k-alt">
+          <span><b>CNK Elektronik Makine San. A.Ş.</b></span>
+          <span>Organize San. Böl. Orhan Işık Bulv. No:8 · Sincan / Ankara</span>
+          <span>www.dolfintr.com</span>
+        </div>
+      </section>
+    </div>
+    <button class="buyut" type="button" data-hedef="s3">Tam boyut gör</button>
+  </figure>
+
+</main>
+
+<dialog id="buyuk" lang="tr" aria-label="Kapağın tam boyutlu görünümü">
+  <button class="kapat" type="button">Kapat</button>
+  <div class="buyuk-ic"></div>
+</dialog>
+
+<script>
+(function () {
+  var W = 210 * 96 / 25.4, H = 297 * 96 / 25.4;
+  function sigdir() {
+    document.querySelectorAll('.cerceve').forEach(function (c) {
+      var k = c.clientWidth / W;
+      c.style.setProperty('--k', k);
+      c.style.height = (H * k) + 'px';
+    });
+  }
+  if ('ResizeObserver' in window) new ResizeObserver(sigdir).observe(document.body);
+  window.addEventListener('resize', sigdir);
+  sigdir();
+
+  var dlg = document.getElementById('buyuk');
+  var ic = dlg.querySelector('.buyuk-ic');
+  function ac(id) {
+    var s = document.querySelector('#' + id + ' .sayfa');
+    if (!s || !dlg.showModal) return;
+    var k = Math.min((window.innerWidth - 24) / W, (window.innerHeight - 24) / H);
+    ic.innerHTML = '';
+    ic.appendChild(s.cloneNode(true));
+    ic.style.setProperty('--k', k);
+    ic.style.width = (W * k) + 'px';
+    ic.style.height = (H * k) + 'px';
+    dlg.showModal();
+  }
+  document.querySelectorAll('.buyut').forEach(function (b) {
+    b.addEventListener('click', function () { ac(b.dataset.hedef); });
+  });
+  document.querySelectorAll('.cerceve').forEach(function (c) {
+    c.addEventListener('click', function () { ac(c.closest('.secenek').id); });
+  });
+  dlg.querySelector('.kapat').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+})();
+</script>
+</body>
+</html>

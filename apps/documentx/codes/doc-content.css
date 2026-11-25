@@ -1,0 +1,561 @@
+/* Belge içeriği — yeni bileşenler (PDF görünümü, HTML görünümü ve HTML çıktısı ortak).
+   Uygulamada index.html, dışa aktarılan HTML'de web/exporters.js tarafından gömülür. */
+
+/* ── Güvenlik uyarı kutuları (ISO 3864-2 / ANSI Z535.6 düzeni) ──
+   **TEHLİKE/UYARI/DİKKAT — <tehlike>:** ile başlayan paragraf veya alıntı. */
+.md-callout {
+  --callout-band: #FF7900;
+  --callout-ink: #000000;
+  border: 1.5px solid var(--callout-band);
+  border-radius: 3px;
+  overflow: hidden;
+  break-inside: avoid;
+  page-break-inside: avoid;
+  background: #ffffff;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.md-callout.callout-danger  { --callout-band: #C8102E; --callout-ink: #ffffff; }
+.md-callout.callout-warning { --callout-band: #FF7900; --callout-ink: #000000; }
+.md-callout.callout-caution { --callout-band: #FFD100; --callout-ink: #000000; }
+.md-callout.callout-notice  { --callout-band: #0067A5; --callout-ink: #ffffff; }
+
+.callout-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 10px;
+  background: var(--callout-band);
+  color: var(--callout-ink);
+  font-family: 'Calibri', 'Segoe UI', sans-serif;
+  font-size: 10.5pt;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  line-height: 1.5;
+}
+.callout-icon {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  color: var(--callout-ink);
+}
+.callout-warning .callout-icon,
+.callout-caution .callout-icon { color: #000000; }
+.callout-notice .callout-word { font-style: italic; }
+
+.callout-body {
+  padding: 7px 12px 8px;
+  text-align: justify;
+}
+.callout-hazard { font-weight: 700; }
+
+/* NOT / NOTE / BİLGİ — bantsız, sol çizgili bilgi notu */
+.md-callout.callout-note {
+  border: none;
+  border-left: 4px solid #4a7cf7;
+  border-radius: 0;
+  background: #f4f7ff;
+}
+.callout-note .callout-body { padding: 6px 12px; }
+.callout-note .callout-word { color: #1a2540; letter-spacing: 0.5px; }
+
+/* Liste maddesi içindeki uyarı etiketi */
+.sig-pill {
+  display: inline-block;
+  padding: 0 6px;
+  margin-right: 2px;
+  border-radius: 2px;
+  font-size: 0.85em;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  line-height: 1.45;
+  vertical-align: baseline;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.sig-pill.sig-danger  { background: #C8102E; color: #ffffff; }
+.sig-pill.sig-warning { background: #FF7900; color: #000000; }
+.sig-pill.sig-caution { background: #FFD100; color: #000000; }
+.sig-pill.sig-notice  { background: #0067A5; color: #ffffff; }
+.sig-pill.sig-note    { background: #e3eaf8; color: #1a2540; }
+
+/* ── İç içe listeler (md-sublist: ayrı blok, üst maddeye yapışık) ── */
+.md-list.md-sublist { margin-bottom: 0; }
+.md-list.md-depth-1 { padding-left: 46px; }
+.md-list.md-depth-2 { padding-left: 70px; }
+.md-list.md-depth-3 { padding-left: 94px; }
+ol.md-list.md-depth-1 { list-style-type: lower-alpha; }
+ol.md-list.md-depth-2 { list-style-type: lower-roman; }
+ul.md-list.md-depth-1 { list-style-type: circle; }
+ul.md-list.md-depth-2 { list-style-type: square; }
+
+.page-content > .md-list + .md-list.md-sublist,
+.page-content > .md-list.md-sublist + .md-list,
+.html-flow-content > .md-list + .md-list.md-sublist,
+.html-flow-content > .md-list.md-sublist + .md-list,
+.compare-cell > .md-list + .md-list.md-sublist,
+.compare-cell > .md-list.md-sublist + .md-list {
+  margin-top: 5px;
+}
+
+/* ── Tablo sütun hizası (ayırıcı satır: ---: sağ, :---: orta) ── */
+.md-table th.al-right, .md-table td.al-right { text-align: right; }
+.md-table th.al-center, .md-table td.al-center { text-align: center; }
+.md-table th.al-left, .md-table td.al-left { text-align: left; }
+
+/* ── Şekil ve tablo başlıkları ── */
+.md-figcaption {
+  margin-top: 6px;
+  font-size: 9pt;
+  line-height: 1.4;
+  text-align: center;
+  color: #33415c;
+  font-style: italic;
+}
+.md-figure-group .md-figcaption { grid-column: 1 / -1; }
+/* Alt yazı ızgaranın son çocuğu olduğunda tek kalan son görseli yine ortala */
+.md-figure-group--multi:has(> .md-figcaption) > .md-figure-cell:nth-last-child(2):nth-child(odd) {
+  grid-column: 1 / -1;
+  width: calc(50% - 7px);
+  justify-self: center;
+}
+.cap-num { font-weight: 700; font-style: normal; color: #1a2540; }
+
+.md-table caption.md-tblcaption {
+  caption-side: top;
+  padding: 0 0 6px;
+  font-size: 9.5pt;
+  text-align: left;
+  color: #33415c;
+}
+.md-table caption.md-tblcaption--cont { font-style: italic; color: #4a5568; }
+
+/* ── Çapraz referans ── */
+a.xref { color: inherit; text-decoration: none; border-bottom: 1px dotted currentColor; }
+a.k-link { color: inherit; text-decoration: none; }
+.xref-page { white-space: nowrap; }
+a.xref-broken { color: #c53030; border-bottom: 1.5px dashed #c53030; cursor: help; }
+
+/* ── İçindekiler — başlık bağlantısı, alt listeler ── */
+a.toc-back { color: inherit; text-decoration: none; display: block; }
+.toc-title.toc-title-sub { margin-top: 28px; font-size: 15px; }
+.toc-row.toc-fig { font-weight: 400; font-size: 13px; margin-top: 0; }
+.toc-row.toc-fig .toc-num { min-width: 92px; color: #1a2540; }
+
+/* ── Revizyon geçmişi ── */
+.rev-table td.al-left { text-align: left; }
+.rev-table th:nth-child(1), .rev-table td:nth-child(1) { width: 60px; }
+.rev-table th:nth-child(2), .rev-table td:nth-child(2) { width: 100px; }
+
+/* ── Antet: model + değişken bölüm başlığı ── */
+.ph-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  max-width: 62%;
+  min-width: 0;
+}
+.ph-chapter {
+  font-size: 9px;
+  color: #4a5568;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* ── KAPAK A / B ── (cover.js > buildDesignCover; ölçüler mm, A4 = 210 × 297) */
+.cover-page.kapak-a, .cover-page.kapak-b {
+  --k-murekkep: #1C1D1F;
+  --k-gri-koyu: #45484D;
+  --k-gri: #7A7E85;
+  --k-cizgi: #D9DBDE;
+  --k-panel: #F3F4F5;
+  font-family: 'Calibri', 'Segoe UI', Arial, sans-serif;
+  color: var(--k-murekkep);
+  line-height: normal;
+  font-variant-ligatures: none; /* PDF metninde "fi" bozulmasın: dolfintr.com */
+}
+.cover-page.kapak-a *, .cover-page.kapak-b * { box-sizing: border-box; margin: 0; }
+
+.cover-page .k-logo { position: absolute; display: block; object-fit: contain; object-position: left center; }
+.cover-page .k-baslik { position: absolute; left: 25mm; right: 25mm; }
+.cover-page .k-tur {
+  font-size: 10pt;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--k-gri);
+  margin-bottom: 2.5mm;
+}
+.cover-page .k-model {
+  font-size: 50pt;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--k-murekkep);
+}
+.cover-page .k-belge { margin-top: 4mm; font-size: 20pt; color: var(--cover-accent, #ff0000); }
+/* Seri kılavuzun kapsamı (kapak.kapsam): model kodu alanları */
+.cover-page .k-kapsam { margin-top: 4.5mm; font-size: 9.5pt; font-weight: 600; letter-spacing: 0.06em; white-space: pre; color: var(--k-gri-koyu); }
+
+.cover-page .k-bilgi {
+  position: absolute;
+  left: 25mm;
+  right: 20mm;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  border-top: 0.75pt solid var(--k-cizgi);
+}
+.cover-page .k-bilgi > div { padding: 3.5mm 4mm 0 0; }
+.cover-page .k-bilgi > div + div { padding-left: 4mm; border-left: 0.75pt solid var(--k-cizgi); }
+.cover-page .k-bilgi-ad {
+  font-size: 7pt;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--k-gri);
+  margin-bottom: 1.2mm;
+}
+.cover-page .k-bilgi-deger { font-size: 11pt; font-weight: 600; color: var(--k-murekkep); }
+.cover-page .k-bilgi-deger small {
+  display: block;
+  margin-top: 0.6mm;
+  font-size: 7.5pt;
+  font-weight: 400;
+  color: var(--k-gri);
+}
+
+.cover-page .k-alt {
+  position: absolute;
+  left: 25mm;
+  right: 20mm;
+  bottom: 14mm;
+  display: flex;
+  justify-content: space-between;
+  gap: 6mm;
+  font-size: 7.5pt;
+  color: var(--k-gri);
+}
+.cover-page .k-alt > span { white-space: pre-line; }
+.cover-page .k-alt b { font-weight: 600; color: var(--k-gri-koyu); }
+
+/* Kapak A — tipografik */
+.kapak-a .k-sol-serit {
+  position: absolute;
+  left: 12mm;
+  top: 25mm;
+  bottom: 14mm;
+  width: 1.2mm;
+  background: var(--cover-accent, #ff0000);
+}
+.kapak-a .k-logo { left: 25mm; top: 25mm; width: 52mm; height: 18.6mm; }
+.kapak-a .k-baslik { top: 104mm; }
+.kapak-a .k-bilgi { top: 236mm; }
+
+/* Kapak B — görselli: öğeler iki yanda 22 mm; başlık bloğu ortalı */
+.kapak-b { --k-kenar: 22mm; }
+.kapak-b .k-panel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  height: 158mm;
+  background: var(--k-panel);
+}
+.kapak-b .k-logo { left: var(--k-kenar); top: 22mm; width: 46mm; height: 16.4mm; }
+
+/* Çizim kutusu sabit; çizim oranı korunarak sığar ve tabana oturur. */
+.kapak-b .k-cizim-kutu {
+  position: absolute;
+  left: var(--k-kenar);
+  right: var(--k-kenar);
+  top: 50mm;
+  bottom: 14mm;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.kapak-b .k-cizim {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  opacity: 0.78;
+}
+.kapak-b .k-cizim.izometrik { opacity: 0.92; }
+
+/* Çizim yoksa model kodu panelde çok açık gri; düzen değişmez. */
+.kapak-b .k-cizim-yok {
+  position: absolute;
+  left: var(--k-kenar);
+  right: var(--k-kenar);
+  top: 50mm;
+  bottom: 14mm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 84pt;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #E4E6E9;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.kapak-b .k-cizim-yok.uzun { font-size: 56pt; }
+.kapak-b .k-cizim-yok.cok-uzun { font-size: 38pt; }
+
+.kapak-b .k-serit {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 158mm;
+  height: 2mm;
+  background: var(--cover-accent, #ff0000);
+}
+
+/* Sağ üst: QR logo yüksekliğinde; dil etiketi logonun dikey ortasında */
+.kapak-b .k-qr {
+  position: absolute;
+  right: var(--k-kenar);
+  top: 22mm;
+  width: 16.4mm;
+  height: 16.4mm;
+  display: block;
+}
+.kapak-b .k-dil {
+  position: absolute;
+  right: var(--k-kenar);
+  top: 26.2mm;
+  height: 8mm;
+  min-width: 13mm;
+  padding: 0 2.6mm 0 2.9mm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0.9pt solid var(--cover-accent, #ff0000);
+  font-size: 11pt;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--cover-accent, #ff0000);
+}
+
+/* Başlık: şerit (160 mm) ile bilgi satırı (238 mm) arasında ortada.
+   Aralıklı harflerde sondaki boşluk soldaki iç boşlukla dengelenir. */
+.kapak-b .k-baslik {
+  left: var(--k-kenar);
+  right: var(--k-kenar);
+  top: 160mm;
+  height: 78mm;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.kapak-b .k-tur { font-size: 9pt; letter-spacing: 0.26em; padding-left: 0.26em; margin-bottom: 3.5mm; }
+.kapak-b .k-model { font-size: 46pt; }
+.kapak-b .k-model.uzun { font-size: 34pt; }
+.kapak-b .k-ayrac {
+  width: 12mm;
+  height: 1.2mm;
+  background: var(--cover-accent, #ff0000);
+  margin: 6mm 0 5mm;
+}
+.kapak-b .k-belge {
+  margin-top: 0;
+  font-size: 12pt;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  padding-left: 0.32em;
+  text-transform: uppercase;
+}
+.kapak-b .k-bilgi { left: var(--k-kenar); right: var(--k-kenar); top: 238mm; }
+.kapak-b .k-bilgi > div,
+.kapak-b .k-bilgi > div + div { padding: 3.5mm 2mm 0; text-align: center; }
+.kapak-b .k-bilgi-ad { padding-left: 0.16em; }
+.kapak-b .k-alt {
+  left: var(--k-kenar);
+  right: var(--k-kenar);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+}
+.kapak-b .k-alt > :nth-child(2) { text-align: center; }
+.kapak-b .k-alt > :nth-child(3) { justify-self: end; }
+
+/* ── Arka kapak ── */
+.back-cover-page { position: relative; }
+.back-cover-logo {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  transform: translate(-50%, -50%);
+  max-width: 340px;
+  max-height: 220px;
+  object-fit: contain;
+}
+.back-cover-doc {
+  position: absolute;
+  left: 70px;
+  right: 70px;
+  top: 62%;
+  text-align: center;
+  font-family: 'Calibri', 'Segoe UI', sans-serif;
+  font-size: 14pt;
+  font-weight: 700;
+  color: var(--cover-accent, #ff0000);
+}
+.back-cover-meta {
+  position: absolute;
+  left: 70px;
+  right: 70px;
+  top: calc(62% + 34px);
+  text-align: center;
+  font-family: 'Calibri', 'Segoe UI', sans-serif;
+  font-size: 10.5pt;
+  color: #4a5568;
+}
+.back-cover-company {
+  position: absolute;
+  left: 70px;
+  right: 70px;
+  bottom: 92px;
+  text-align: center;
+  font-family: 'Calibri', 'Segoe UI', sans-serif;
+  font-size: 11pt;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  color: #1a1a2e;
+}
+.back-cover-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 56px;
+  background: var(--cover-accent, #ff0000);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* ── Ekranda yardımcı işaretler (baskıya çıkmaz) ── */
+@media screen {
+  img.md-img.img-broken {
+    min-width: 120px;
+    min-height: 60px;
+    outline: 2px dashed #e53e3e;
+    outline-offset: -2px;
+    background: #fff5f5;
+  }
+}
+@media print {
+  a.xref-broken { color: inherit; border-bottom: none; }
+}
+
+/* ── DATA yer tutucuları ── */
+@media screen {
+  .data-missing { color: #c53030; background: #fff5f5; border-bottom: 1.5px dashed #c53030; }
+}
+
+/* ── Dizin ── */
+.idx-letter {
+  margin-top: 10px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid #cbd5e0;
+  font-family: 'Calibri', sans-serif;
+  font-size: 12pt;
+  font-weight: 800;
+  color: var(--brand-color, #1a2540);
+}
+/* Uzun sayfa listesi sayfa kenarından taşmaz, alt satıra geçer; terim ilk satırda kalır. */
+.idx-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 3px;
+  font-size: 10pt;
+  line-height: 1.45;
+}
+.idx-row .toc-leader { transform: none; }
+.idx-term { flex-shrink: 0; max-width: 60%; }
+.idx-pages { min-width: 0; text-align: right; font-weight: 700; color: #1a2540; }
+.idx-pages a { color: inherit; text-decoration: none; white-space: nowrap; }
+.page-content > .idx-letter + .idx-row,
+.page-content > .idx-row + .idx-row,
+.page-content > .idx-row + .idx-letter,
+.page-content > .toc-title + .idx-letter { margin-top: 3px; }
+.page-content > .idx-row + .idx-letter { margin-top: 12px; }
+
+/* ── ISO 7010 işaretleri (:W012:) ── */
+.iso-sym { display: inline-block; height: 1.9em; width: auto; vertical-align: middle; margin: 0 2px; }
+.md-table .iso-sym { height: 46px; margin: 2px; }
+.md-callout .iso-sym { height: 2.2em; }
+
+/* ── Değişiklik çubukları (revizyon farkı) ── */
+.dx-changed { position: relative; }
+.dx-changed::before,
+tr.dx-changed > td:first-child::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -22px;
+  width: 3px;
+  background: #d93025;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+tr.dx-changed::before { content: none; }
+tr.dx-changed > td:first-child { position: relative; }
+tr.dx-changed > td:first-child::before { left: -23px; }
+.md-list > li.dx-changed::before { left: -44px; }
+.md-list.md-depth-1 > li.dx-changed::before { left: -68px; }
+.md-list.md-depth-2 > li.dx-changed::before { left: -92px; }
+.md-list.md-depth-3 > li.dx-changed::before { left: -116px; }
+table.dx-changed::before { left: -22px; }
+/* Çubuklar içerik kutusunun solunda (sayfa kenar boşluğunda) durur; yalnızca değişiklik
+   içeren gerçek sayfalarda içerik kesmesi kaldırılır (ölçüm sayfası etkilenmez). */
+.a4-page:not(.measure) > .page-content:has(.dx-changed) { overflow: visible; }
+.md-callout.dx-changed { overflow: visible; }
+.md-callout.dx-changed > .callout-head { border-radius: 1.5px 1.5px 0 0; }
+
+/* ── Görsel işaretleri (<görsel>.marks.json) ── */
+.md-figure-cell.has-marks { position: relative; }
+.img-mark {
+  position: absolute;
+  z-index: 2;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  border: 2px solid #fff;
+  border-radius: 11px;
+  background: #d93025;
+  color: #fff;
+  font-family: 'Calibri', 'Segoe UI', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 18px;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* ── Sayfa boyutu (project.yaml > cikti.sayfa) ── */
+body.paper-a5 .a4-page:not(.cover-page) {
+  --page-w: 559px;
+  --a4-height: 794px;
+  --pad-x: 42px;
+  --edge-x: 48px;
+  --footer-rule-inset: 74px;
+  --num-bottom: 46px;
+  --figure-scale: 0.85;
+}
+body.paper-a5 .a4-page:not(.cover-page) .ph-footer { width: 260px; font-size: 8.5pt; }
+/* A5 kapak: A4 tasarımı (794×1123) aynı oranla 559×794'e küçültülür */
+body.paper-a5.view-pdf .cover-page { zoom: 0.704; }
+body.paper-letter .a4-page { --page-w: 816px; --a4-height: 1056px; }

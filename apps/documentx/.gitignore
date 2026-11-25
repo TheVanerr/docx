@@ -1,0 +1,25 @@
+node_modules/
+codes/node_modules/
+dist/
+out/
+preview/
+*.log
+.DS_Store
+Thumbs.db
+
+# API anahtarları ve çeviri durumu (gizli / yerel)
+.env
+scripts/.translation-state.json
+BACKUP/
+
+# Uygulama ciktilari (PDF / HTML)
+exports/
+
+# CAD modelleri (STEP) — GitHub 100 MB dosya sinirini asar
+*.step
+*.STEP
+*.stp
+*.STP
+
+# Klasordeki DocumentX simgesi (tam yol tutar; DocumentX.vbs her acilista yeniden yazar)
+/DocumentX.lnk

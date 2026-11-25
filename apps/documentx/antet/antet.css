@@ -1,0 +1,373 @@
+/* DOLFIN kapak ve sayfa anteti — örnek tasarım.
+   Ölçüler mm; A4 = 210 × 297 mm. Uygulamaya aktarılırken aynı değerler
+   codes/cover.js (kapak) ve codes/header.js + style.css (antet) içine taşınır. */
+
+:root {
+  --kirmizi: #F60000;      /* logodaki kırmızı */
+  --murekkep: #1C1D1F;     /* başlıklar */
+  --gri-koyu: #45484D;     /* gövde metni */
+  --gri: #7A7E85;          /* ikincil metin, etiketler */
+  --cizgi: #D9DBDE;        /* ince ayırıcı çizgiler */
+  --panel: #F3F4F5;        /* açık gri zemin */
+  --font: 'Calibri', 'Segoe UI', Arial, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { background: #E6E7E9; }
+body {
+  font-family: var(--font);
+  color: var(--murekkep);
+  padding: 10mm 0 16mm;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4mm;
+}
+
+.onizleme-notu {
+  width: 210mm;
+  margin-top: 6mm;
+  font: 600 10pt/1.3 'Segoe UI', Arial, sans-serif;
+  color: #5b6068;
+}
+.onizleme-notu span { font-weight: 400; color: #8a8f97; }
+
+.sayfa {
+  position: relative;
+  width: 210mm;
+  height: 297mm;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 2px 18px rgba(0, 0, 0, 0.12);
+}
+
+@page { size: A4; margin: 0; }
+@media print {
+  html, body { background: #fff; }
+  body { display: block; padding: 0; }
+  .onizleme-notu { display: none; }
+  .sayfa { box-shadow: none; break-after: page; }
+}
+
+/* ───────────── KAPAK — ortak parçalar ───────────── */
+
+.k-logo { position: absolute; display: block; }
+
+
+.k-baslik { position: absolute; left: 25mm; right: 25mm; }
+.k-vurgu { width: 16mm; height: 1.6mm; background: var(--kirmizi); margin-bottom: 7mm; }
+.k-tur {
+  font-size: 10pt;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gri);
+  margin-bottom: 2.5mm;
+}
+.k-model {
+  font-size: 50pt;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--murekkep);
+}
+.k-belge {
+  margin-top: 4mm;
+  font-size: 20pt;
+  font-weight: 400;
+  color: var(--kirmizi);
+}
+
+.k-bilgi {
+  position: absolute;
+  left: 25mm;
+  right: 20mm;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  border-top: 0.75pt solid var(--cizgi);
+}
+.k-bilgi > div { padding: 3.5mm 4mm 0 0; }
+.k-bilgi > div + div { padding-left: 4mm; border-left: 0.75pt solid var(--cizgi); }
+.k-bilgi dt {
+  font-size: 7pt;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gri);
+  margin-bottom: 1.2mm;
+}
+.k-bilgi dd { font-size: 11pt; font-weight: 600; color: var(--murekkep); }
+.k-bilgi dd small {
+  display: block;
+  margin-top: 0.6mm;
+  font-size: 7.5pt;
+  font-weight: 400;
+  color: var(--gri);
+}
+
+.k-alt {
+  position: absolute;
+  left: 25mm;
+  right: 20mm;
+  bottom: 14mm;
+  display: flex;
+  justify-content: space-between;
+  gap: 6mm;
+  font-size: 7.5pt;
+  color: var(--gri);
+}
+.k-alt b { font-weight: 600; color: var(--gri-koyu); }
+
+/* ───────────── KAPAK A — tipografik ───────────── */
+
+.kapak-a .k-sol-serit {
+  position: absolute;
+  left: 12mm;
+  top: 25mm;
+  bottom: 14mm;
+  width: 1.2mm;
+  background: var(--kirmizi);
+}
+.kapak-a .k-logo { left: 25mm; top: 25mm; width: 52mm; }
+.kapak-a .k-baslik { top: 104mm; }
+.kapak-a .k-bilgi { top: 236mm; }
+
+/* ───────────── KAPAK B — görselli ───────────── */
+/* Tüm öğeler iki yanda eşit 22 mm kenar boşluğunda; başlık bloğu ortalı. */
+
+.kapak-b { --kenar: 22mm; }
+
+.kapak-b .k-panel {
+  position: absolute;
+  left: 0; top: 0; right: 0;
+  height: 158mm;
+  background: var(--panel);
+}
+.kapak-b .k-logo { left: var(--kenar); top: 22mm; width: 46mm; }
+
+/* Çizim kutusu sabittir; çizim oranı korunarak kutuya sığar ve tabana oturur.
+   Uzun (ön görünüş) ya da dar-yüksek (yan görünüş) her çizim aynı kutuda durur. */
+.kapak-b .k-cizim-kutu {
+  position: absolute;
+  left: var(--kenar);
+  right: var(--kenar);
+  top: 50mm;
+  bottom: 14mm;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.kapak-b .k-cizim {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  opacity: 0.78;
+}
+
+/* İzometrik render (gölgeli) — aynı kutu, biraz daha koyu görünür. */
+.kapak-b .k-cizim.izometrik { opacity: 0.92; }
+
+/* Çizim yoksa yedek görünüm: model kodu panelde çok açık gri. Kapak düzeni değişmez. */
+.kapak-b .k-cizim-yok {
+  position: absolute;
+  left: var(--kenar);
+  right: var(--kenar);
+  top: 50mm;
+  bottom: 14mm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 84pt;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #E4E6E9;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.kapak-b .k-serit {
+  position: absolute;
+  left: 0; right: 0;
+  top: 158mm;
+  height: 2mm;
+  background: var(--kirmizi);
+}
+
+/* Sağ üst — logoyu dengeleyen tek öğe. Logo 46 mm genişlikte ≈ 16,4 mm yükseklikte. */
+.kapak-b .k-qr {               /* seçenek 1: QR kod, logo yüksekliğinde */
+  position: absolute;
+  right: var(--kenar);
+  top: 22mm;
+  width: 16.4mm;
+  height: 16.4mm;
+  display: block;
+}
+.kapak-b .k-dil {              /* seçenek 2: dil etiketi, logonun dikey ortasında */
+  position: absolute;
+  right: var(--kenar);
+  top: 26.2mm;
+  height: 8mm;
+  min-width: 13mm;
+  padding: 0 2.6mm 0 2.9mm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0.9pt solid var(--kirmizi);
+  font-size: 11pt;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--kirmizi);
+}
+
+/* Başlık: kırmızı şerit (160 mm) ile bilgi satırı (238 mm) arasında yatay ve dikey ortada.
+   Aralıklı harflerde sondaki boşluk soldaki eşit iç boşlukla dengelenir. */
+.kapak-b .k-baslik {
+  left: var(--kenar);
+  right: var(--kenar);
+  top: 160mm;
+  height: 78mm;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.kapak-b .k-vurgu { display: none; }
+.kapak-b .k-tur {
+  font-size: 9pt;
+  letter-spacing: 0.26em;
+  padding-left: 0.26em;
+  margin-bottom: 3.5mm;
+}
+.kapak-b .k-model { font-size: 46pt; }
+.kapak-b .k-model.uzun { font-size: 34pt; }   /* 14 karakterden uzun model adları */
+.kapak-b .k-ayrac {
+  width: 12mm;
+  height: 1.2mm;
+  background: var(--kirmizi);
+  margin: 6mm 0 5mm;
+}
+.kapak-b .k-belge {
+  margin-top: 0;
+  font-size: 12pt;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  padding-left: 0.32em;
+  text-transform: uppercase;
+  color: var(--kirmizi);
+}
+
+.kapak-b .k-bilgi { left: var(--kenar); right: var(--kenar); top: 238mm; }
+.kapak-b .k-bilgi > div,
+.kapak-b .k-bilgi > div + div { padding: 3.5mm 2mm 0; text-align: center; }
+.kapak-b .k-bilgi dt { letter-spacing: 0.16em; padding-left: 0.16em; }
+
+.kapak-b .k-alt {               /* orta öğe her zaman tam sayfa ortasında */
+  left: var(--kenar);
+  right: var(--kenar);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+}
+.kapak-b .k-alt > :last-child { justify-self: end; }
+
+/* ───────────── SAYFA ANTETİ ───────────── */
+
+.s-antet {
+  position: absolute;
+  left: 20mm;
+  right: 20mm;
+  top: 9.5mm;
+  height: 9.3mm;              /* çizgi alt kenarı ≈ 18.8 mm = 71 px (uygulamadaki --header-rule-y) */
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 0.75pt solid var(--cizgi);
+}
+.s-antet::after {             /* çizginin solundaki kırmızı vurgu */
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -0.75pt;
+  width: 18mm;
+  height: 1.3pt;
+  background: var(--kirmizi);
+}
+.s-logo { height: 6.2mm; display: block; }
+.s-bolum {                    /* tek satır, logonun dikey ortasında: 02 │ GÜVENLİK */
+  height: 6.2mm;
+  display: flex;
+  align-items: center;
+  gap: 2.4mm;
+  font-size: 8.5pt;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--murekkep);
+}
+.s-bolum em { font-style: normal; letter-spacing: 0.04em; color: var(--kirmizi); }
+.s-bolum i { width: 0.75pt; height: 3.4mm; background: var(--cizgi); }
+
+.s-alt {
+  position: absolute;
+  left: 20mm;
+  right: 20mm;
+  bottom: 18mm;
+  height: 8.2mm;              /* üst çizgi sayfa altından ≈ 26.2 mm = 99 px (--footer-rule-inset) */
+  border-top: 0.75pt solid var(--cizgi);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
+  font-size: 7.5pt;
+  color: var(--gri);
+}
+.s-alt > :nth-child(2) { text-align: center; }
+.s-alt .s-no {
+  justify-self: end;
+  font-size: 10pt;
+  font-weight: 700;
+  color: var(--kirmizi);
+}
+.s-alt .s-no small { font-size: 7.5pt; font-weight: 400; color: var(--gri); }
+
+/* Örnek gövde — uygulamadaki belge stillerine yakın, yalnızca antetin
+   dolu bir sayfada nasıl durduğunu göstermek için. */
+.s-govde {
+  position: absolute;
+  left: 20mm;
+  right: 20mm;
+  top: 27mm;
+  bottom: 34mm;
+  font-size: 10.5pt;
+  line-height: 1.45;
+  color: var(--gri-koyu);
+}
+.s-govde h1 { font-size: 16pt; color: var(--murekkep); margin-bottom: 4mm; }
+.s-govde h2 { font-size: 12pt; color: var(--murekkep); margin: 6mm 0 2.5mm; }
+.s-govde p { margin-bottom: 3mm; text-align: justify; }
+.s-govde ol { margin: 0 0 3mm 6mm; }
+.s-govde li { margin-bottom: 1.2mm; }
+
+.s-uyari {
+  margin: 4mm 0;
+  padding: 3mm 4mm;
+  background: #FFF6E0;
+  border-left: 1.2mm solid #F2A900;
+  color: var(--murekkep);
+}
+.s-uyari b { color: #9A5B00; }
+
+.s-tablo-baslik { font-size: 9pt; color: var(--gri); margin: 4mm 0 1.5mm; }
+.s-tablo-baslik b { color: var(--murekkep); }
+.s-govde table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+.s-govde th {
+  background: var(--panel);
+  color: var(--murekkep);
+  font-weight: 700;
+  text-align: left;
+  padding: 2mm 3mm;
+  border-bottom: 0.75pt solid var(--cizgi);
+}
+.s-govde td { padding: 2mm 3mm; border-bottom: 0.75pt solid var(--cizgi); vertical-align: top; }

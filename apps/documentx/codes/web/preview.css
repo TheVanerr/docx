@@ -1,0 +1,45 @@
+/* Önizleme sayfası (scripts/build-preview.js içine gömer): uygulamanın koyu görünümü tek tema,
+   sayfa ekranı doldurur (100vh yerine akış), telefon genişliğinde gezinme çubuğu kendi içinde
+   kayar, kenar çubuğu ve kalite paneli ekranın üstüne açılır; yazma gerektiren denetimler gizli. */
+:root { color-scheme: dark; }
+html { box-sizing: border-box; height: 100%; }
+body { height: 100%; display: flex; flex-direction: column; background: var(--bg-primary); color: var(--text-primary); }
+.titlebar, .navbar {
+  flex: 0 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.workspace { flex: 1 1 auto; height: auto !important; min-height: 0; }
+.content-area { height: auto !important; }
+.dx-preview .export-wrap,
+.dx-preview .np-btn,
+.dx-preview .tools-menu button[onclick^="chooseWorkspace"] { display: none !important; }
+.dx-preview .titlebar-workspace { color: var(--text-secondary); }
+
+@media (max-width: 860px) {
+  .titlebar-hint { display: none; }
+  .navbar { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; justify-content: flex-start; gap: 10px; }
+  .navbar::-webkit-scrollbar { display: none; }
+  .navbar-left, .navbar-center, .navbar-right { flex: 0 0 auto; overflow: visible; }
+  .content-area {
+    padding-block: 16px 24px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  body.sidebar-open .sidebar,
+  body.qc-open .qc-panel {
+    position: fixed;
+    z-index: 80;
+    top: calc(var(--titlebar-h) + var(--navbar-h) + env(safe-area-inset-top, 0px));
+    bottom: 0;
+    background: var(--bg-secondary);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+  }
+  body.sidebar-open .sidebar { left: 0; width: min(320px, 86vw); padding-left: env(safe-area-inset-left, 0px); }
+  body.qc-open .qc-panel { right: 0; width: min(380px, 92vw); padding-right: env(safe-area-inset-right, 0px); }
+  .search-bar { right: max(16px, env(safe-area-inset-right, 0px)); left: max(16px, env(safe-area-inset-left, 0px)); }
+  /* HTML görünümü: A4 kapak tasarım boyutunda çizilir, preview.js ekrana sığacak kadar küçültür (zoom). */
+  .html-cover-section { width: 794px; max-width: none; }
+  .html-content-section, .html-toc-section { padding-left: 16px; padding-right: 16px; }
+  .html-flow-content table { display: block; max-width: 100%; overflow-x: auto; }
+}
