@@ -22,7 +22,7 @@
     { id: 'electricx', ad: 'ELECTRICX', kisa: 'Elektrik', grup: 'Mühendislik', aciklama: 'Pano malzeme listesi, pano etiketi ve şema çevirisi.',
       yol: 'apps/electricx/index.html', simge: 'apps/electricx/ortak/varliklar/ikon.svg' },
     { id: 'ppx', ad: 'P&PX', kisa: 'P&ID', grup: 'Mühendislik', aciklama: 'P&ID ve pnömatik çizimler.',
-      yol: 'apps/ppx/index.html', simge: 'kabuk/simgeler/ppx.svg' },
+      yol: 'apps/ppx/index.html', web: '/P-PX/', simge: 'kabuk/simgeler/ppx.svg' },
     { id: 'layoutx', ad: 'LAYOUTX', kisa: 'Layout', grup: 'Mühendislik', aciklama: 'STEP modelinden makine yerleşim paftası.',
       yol: 'apps/layoutx/index.html', simge: 'apps/layoutx/app/icons/icon.svg' },
     { id: 'bomx', ad: 'BOMX', kisa: 'BOM', grup: 'Mühendislik', aciklama: 'Malzeme listesi: komponent kütüphanesi, projeler, revizyonlar.',
@@ -38,6 +38,12 @@
   let acik = 'ana';
 
   const tamAdres = (yol) => new URL(yol, location.href).href;
+
+  /* GitHub Pages'te (github.io) web adresi ayrı olan uygulama oradan açılır: P&PX'in web sürümü kendi sitesindedir
+     (giriş ekranı programı kendi deposunun kökünden indirir; program sayfası github.io'da doğrudan açılmaz, bkz.
+     apps/ppx/ortak/ppx-boot.js). Bilgisayarda (dosyadan) ve başka sunucularda depodaki kopya açılır. */
+  const GITHUB_PAGES = /\.github\.io$/i.test(location.hostname);
+  const adresi = (u) => (GITHUB_PAGES && u.web) || u.yol;
 
   /* ─── Çizim ────────────────────────────────────────────── */
 
@@ -106,7 +112,7 @@
     if (!f) {
       f = document.createElement('iframe');
       f.title = u.ad;
-      f.src = u.yol;
+      f.src = adresi(u);
       f.setAttribute('allow', 'clipboard-read; clipboard-write; fullscreen');
       $('sahne').appendChild(f);
       cerceveler.set(u.id, f);
@@ -159,7 +165,7 @@
         if (href && href !== 'about:blank') return href;
       } catch { /* başka köken (dosyadan açılış): uygulamanın başlangıç adresi */ }
     }
-    return tamAdres(u.yol);
+    return tamAdres(adresi(u));
   }
 
   function ayriPenceredeAc(u) {
@@ -169,7 +175,7 @@
   function yenile() {
     const f = cerceveler.get(acik);
     if (!f) return;
-    try { f.contentWindow.location.reload(); } catch { f.src = BUL.get(acik).yol; }
+    try { f.contentWindow.location.reload(); } catch { f.src = adresi(BUL.get(acik)); }
   }
 
   let kurIstegi = null;

@@ -13,7 +13,7 @@ açık uygulamalar yerinde kalır, aralarında geçince durum kaybolmaz.
 | `apps/softwarex` | PLC/HMI yazılım dokümanları: teknik doküman, servis, kullanım bilgileri, denetim raporu (görüntüleyici) |
 | `apps/rax` | Risk analizi ve LVD test raporu |
 | `apps/electricx` | Pano malzeme listesi, pano etiketi, şema çeviri |
-| `apps/ppx` | P&ID ve pnömatik |
+| `apps/ppx` | P&ID ve pnömatik (web sürümü şimdilik kendi adresinde: https://thevanerr.github.io/P-PX/; kabuk orayı açar) |
 | `apps/layoutx` | Layout (STEP'ten pafta) |
 | `apps/bomx` | Malzeme listesi (BOM) |
 | `apps/warrantyx` | Garanti belgesi ve CE uygunluk beyanı |
