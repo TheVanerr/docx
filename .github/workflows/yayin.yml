@@ -1,5 +1,5 @@
 # Tek yayın: main'e her gönderimde bütün uygulamaların testleri çalışır; hepsi geçerse site
-# GitHub Pages'e çıkar (https://thevanerr.github.io/docx/<uygulama>/). Test geçmezse yayın olmaz,
+# GitHub Pages'e çıkar (https://thevanerr.github.io/docx/: kabuk, uygulamalar apps/<uygulama>/). Test geçmezse yayın olmaz,
 # açık sürüm değişmez. Bir kez: Settings → Pages → Build and deployment → Source: "GitHub Actions".
 # Not: apps/*/.github klasörleri eski depolardan kaldı; GitHub yalnız bu kök iş akışını çalıştırır.
 name: Yayın
@@ -41,6 +41,9 @@ jobs:
       - name: DocumentX (birim testleri)
         working-directory: apps/documentx/codes
         run: npm run test:unit
+      - name: SoftwareX
+        working-directory: apps/softwarex
+        run: npm test
       - name: LayoutX
         working-directory: apps/layoutx
         run: |

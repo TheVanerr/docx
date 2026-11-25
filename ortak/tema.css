@@ -1,0 +1,101 @@
+/* DOCX ortak tema: bütün uygulamaların arayüz dili (ELECTRICX, P&PX, BOMX, WARRANTYX, R&AX, LAYOUTX ile aynı).
+   Koyu grafit zemin, Dolfin kırmızısı vurgu, Segoe UI. Üst çubuğun altındaki kırmızı çizgi antetteki çizgiyi tekrarlar.
+   Değerler apps/electricx/ortak/tema.css ile aynıdır; renk değişirse ikisi birlikte değişir. */
+
+:root {
+  color-scheme: dark;
+  --bg: #14161b;
+  --panel: #1b1e25;
+  --panel-2: #23272f;
+  --panel-3: #2b3039;
+  --line: #2f343e;
+  --text: #e8eaef;
+  --muted: #aab0bc;
+  --faint: #8e96a6;
+  --dolfin: #ff0000;
+  --dolfin-deep: #d40000;
+  --dolfin-soft: rgba(255, 0, 0, 0.14);
+  --warn: #f5a524;
+  --info: #5b9dff;
+  --ok: #3fb56f;
+  --radius: 6px;
+  --font: 'Segoe UI', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  overflow: hidden;
+}
+
+button, input, select, textarea { font: inherit; color: inherit; }
+a { color: #8ab4ff; }
+:focus-visible { outline: 2px solid var(--dolfin); outline-offset: -1px; }
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--panel-3); border-radius: 6px; border: 2px solid var(--bg); }
+::-webkit-scrollbar-thumb:hover { background: #3a404c; }
+
+/* ── Düğmeler ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--panel-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 8px 14px;
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background 0.12s, border-color 0.12s;
+}
+.btn:hover { background: #363c47; }
+.btn-sm { padding: 5px 11px; font-size: 12px; }
+.btn-primary { background: var(--dolfin-deep); border-color: var(--dolfin-deep); color: #fff; font-weight: 600; }
+.btn-primary:hover { background: var(--dolfin); border-color: var(--dolfin); }
+.btn:disabled { opacity: 0.45; cursor: default; }
+
+/* ── Üst çubuk ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 12px 0 10px;
+  background: var(--panel);
+  border-bottom: 2px solid var(--dolfin);
+  min-width: 0;
+  flex-shrink: 0;
+}
+.tb-logo { background: none; border: none; padding: 4px 6px; cursor: pointer; display: flex; border-radius: 4px; }
+.tb-logo:hover { background: var(--panel-3); }
+.tb-logo img { height: 24px; display: block; }
+.tb-ad { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; margin-right: 10px; white-space: nowrap; }
+.tb-spacer { flex: 1; }
+
+/* ── Sekmeler (ELECTRICX kabuğuyla aynı) ── */
+.sekmeler { display: flex; align-items: center; gap: 2px; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.sekme { padding: 6px 13px; background: transparent; border: none; border-radius: var(--radius); color: var(--muted); cursor: pointer; white-space: nowrap; }
+.sekme:hover:not(:disabled) { color: var(--text); background: var(--panel-3); }
+.sekme[aria-selected="true"] { background: var(--dolfin-deep); color: #fff; font-weight: 600; }
+.sekme:disabled { opacity: 0.4; cursor: default; }
+
+/* ── Paneller ── */
+.panel { padding: 16px 18px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
+.muted { color: var(--muted); }
+.cip {
+  flex: 0 1 auto; min-width: 0; padding: 4px 10px; border-radius: 6px; font-size: 12px; color: #c6cbd5;
+  background: var(--panel-2); border: 1px solid var(--line); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cip.uyari { color: #ffd479; border-color: #6b5620; }
+.cip.hata { color: #ff8585; border-color: #6b2b2b; }

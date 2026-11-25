@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOCX</title>
+  <meta name="description" content="Dolfin makine dokümantasyonu uygulamaları tek pencerede.">
+  <meta name="theme-color" content="#1b1e25">
+  <script>
+    // Manifest yalnız web adresinde (http/https): dosyadan açılışta tarayıcı okuyamaz, konsola hata düşer
+    if (/^https?:$/.test(location.protocol)) {
+      const l = document.createElement('link');
+      l.rel = 'manifest';
+      l.href = 'manifest.webmanifest';
+      document.head.appendChild(l);
+    }
+  </script>
+  <link rel="icon" href="kabuk/simge.svg" type="image/svg+xml">
+  <link rel="icon" href="kabuk/simge-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="kabuk/simge-180.png">
+  <meta name="apple-mobile-web-app-title" content="DOCX">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="stylesheet" href="ortak/tema.css">
+  <link rel="stylesheet" href="kabuk/kabuk.css">
+</head>
+<body>
+  <nav class="ray" aria-label="Uygulamalar">
+    <a class="ray-logo" href="#ana" title="Ana ekran"><img src="ortak/dolfin.png" alt="Dolfin · ana ekran"></a>
+    <div class="ray-liste" id="ray"></div>
+    <div class="ray-alt">
+      <button type="button" class="ray-dugme" id="yenile" title="Açık uygulamayı yeniden yükle" aria-label="Açık uygulamayı yeniden yükle" disabled>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button type="button" class="ray-dugme" id="ayri" title="Açık uygulamayı ayrı pencerede aç" aria-label="Açık uygulamayı ayrı pencerede aç" disabled>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button type="button" class="ray-dugme" id="kur" title="DOCX'i bu bilgisayara uygulama olarak kur" aria-label="DOCX'i uygulama olarak kur" hidden>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M4 19.5h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <div id="sahne">
+    <section id="ana" aria-label="Ana ekran">
+      <main>
+        <h1>DOCX</h1>
+        <p class="alt">Dolfin makine dokümantasyonu: bütün uygulamalar tek pencerede. Soldaki çubuktan uygulamalar arasında geçin; açık uygulamalar yerinde kalır.</p>
+        <div class="panel not" id="dosyaNotu" hidden>
+          <strong>Bu sayfa bilgisayardan (dosyadan) açıldı.</strong>
+          Tarayıcı, dosyadan açılan pencerede çerçevedeki programların klasör seçmesine izin vermez: DocumentX ve SoftwareX ayrı pencerede açılır.
+          Her şeyin tek pencerede çalışması için web adresini kullanın: <a href="https://thevanerr.github.io/docx/">thevanerr.github.io/docx</a>
+        </div>
+        <div id="gruplar"></div>
+      </main>
+    </section>
+
+    <section class="klasor-paneli" id="klasorPaneli" hidden>
+      <div class="panel">
+        <h1><span id="klasorAd"></span> ayrı pencerede açılır</h1>
+        <p>Bu uygulama belgeleri bilgisayardaki bir klasörden okur. DOCX bilgisayardan (dosyadan) açıldığında tarayıcı, çerçevedeki programların klasör seçmesine izin vermez.</p>
+        <p>Ayrı pencerede her şey çalışır. Web adresinde (<a href="https://thevanerr.github.io/docx/">thevanerr.github.io/docx</a>) bu kısıt yoktur.</p>
+        <div class="dugmeler">
+          <button type="button" class="btn btn-primary" id="klasorAyri">Ayrı pencerede aç</button>
+          <button type="button" class="btn" id="klasorBurada">Yine de burada aç</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="kabuk/kabuk.js"></script>
+</body>
+</html>

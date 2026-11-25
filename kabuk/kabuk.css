@@ -1,0 +1,85 @@
+/* DOCX kabuğu: ortak temanın (ortak/tema.css) üstüne yerleşim. Solda uygulama çubuğu, sağda uygulamalar. */
+
+body { display: flex; }
+
+/* ── Uygulama çubuğu ── */
+.ray {
+  width: 76px; flex-shrink: 0;
+  display: flex; flex-direction: column; align-items: stretch; gap: 2px;
+  padding: 8px 0;
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  overflow-y: auto; scrollbar-width: none;
+}
+.ray-logo { display: flex; justify-content: center; padding: 6px 8px 12px; margin-bottom: 4px; border-bottom: 2px solid var(--dolfin); }
+.ray-logo img { width: 52px; height: auto; display: block; }
+.ray-liste { display: flex; flex-direction: column; gap: 2px; }
+.ray-ogesi {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  margin: 0 6px; padding: 8px 2px 7px;
+  border-radius: 8px;
+  color: var(--muted); text-decoration: none;
+  font-size: 10.5px; line-height: 1.15; text-align: center;
+}
+.ray-ogesi img { width: 28px; height: 28px; border-radius: 6px; display: block; object-fit: contain; }
+.ray-ogesi:hover { background: var(--panel-3); color: var(--text); }
+.ray-ogesi[aria-current="page"] { background: var(--panel-3); color: #fff; font-weight: 600; }
+.ray-ogesi[aria-current="page"]::before {
+  content: ''; position: absolute; left: -6px; top: 9px; bottom: 9px; width: 3px;
+  border-radius: 0 3px 3px 0; background: var(--dolfin);
+}
+.ray-alt { margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 0 4px; }
+.ray-dugme {
+  width: 36px; height: 32px; display: flex; align-items: center; justify-content: center;
+  background: transparent; border: 1px solid transparent; border-radius: 6px; color: var(--muted); cursor: pointer;
+}
+.ray-dugme:hover:not(:disabled) { background: var(--panel-3); color: var(--text); }
+.ray-dugme:disabled { opacity: 0.35; cursor: default; }
+
+/* ── Uygulamalar ── */
+#sahne { position: relative; flex: 1; min-width: 0; min-height: 0; }
+#sahne > iframe {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  border: 0; background: var(--bg); visibility: hidden;
+}
+#sahne > iframe.acik { visibility: visible; }
+
+/* ── Ana ekran ── */
+#ana { position: absolute; inset: 0; overflow: auto; font-size: 14px; line-height: 1.5; }
+#ana main { max-width: 1000px; margin: 0 auto; padding: 32px 20px 64px; }
+#ana h1 { font-size: 24px; font-weight: 700; letter-spacing: 0.06em; margin: 0 0 4px; }
+#ana .alt { margin: 0 0 18px; color: var(--muted); }
+#ana h2 { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); margin: 26px 0 10px; }
+.kartlar { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.kart {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 16px; background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--dolfin-deep);
+  border-radius: 8px; color: inherit; text-decoration: none;
+}
+.kart:hover, .kart:focus-visible { border-color: #5a606d; border-top-color: var(--dolfin); }
+.kart img { width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0; object-fit: contain; }
+.kart strong { display: block; font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+.kart span { display: block; color: var(--muted); font-size: 13px; }
+.kart em { display: inline-block; margin-top: 8px; font-style: normal; font-size: 11.5px; color: #c6cbd5; background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 1px 8px; }
+.not { margin-bottom: 8px; border-color: #6b5620; font-size: 13px; color: var(--muted); }
+.not strong { color: #ffd479; }
+
+/* ── Dosyadan açılışta klasörle çalışan uygulama ── */
+.klasor-paneli { position: absolute; inset: 0; display: flex; align-items: flex-start; justify-content: center; padding: 56px 16px; overflow: auto; }
+.klasor-paneli .panel { max-width: 620px; font-size: 14px; line-height: 1.55; }
+.klasor-paneli h1 { font-size: 19px; font-weight: 600; margin: 0 0 8px; }
+.klasor-paneli p { margin: 0 0 12px; color: var(--muted); }
+.klasor-paneli .dugmeler { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+
+/* ── Dar ekran: çubuk alta geçer ── */
+@media (max-width: 640px) {
+  body { flex-direction: column-reverse; }
+  .ray { width: auto; flex-direction: row; padding: 4px; overflow-x: auto; border-right: 0; border-top: 1px solid var(--line); }
+  .ray-alt { display: none; }
+  .ray-logo { flex-shrink: 0; align-items: center; padding: 0 10px 0 6px; margin: 0 4px 0 0; border-bottom: 0; border-right: 2px solid var(--dolfin); }
+  .ray-logo img { width: 44px; }
+  .ray-liste { flex-direction: row; }
+  .ray-ogesi { min-width: 62px; margin: 0 2px; }
+  .ray-ogesi[aria-current="page"]::before { left: 10px; right: 10px; top: -4px; bottom: auto; width: auto; height: 3px; border-radius: 0 0 3px 3px; }
+}
