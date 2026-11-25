@@ -191,7 +191,8 @@ test('kabuk: program deposundaki müşteri verisi, testler, araçlar, belgeler v
   for (const p of ['P-IDX/ML/kayitlar/kodlar.json', 'P-IDX/ML/KODListesi.csv', 'test/ppx.test.js', 'pwa/index.html', 'README.md', 'package.json', 'P-IDX/tools/veri-surumu.js', 'P-IDX/P&ID/codes/engine/test/engine.test.js']) {
     assert.ok(skipped.includes(p), p);
   }
-  assert.ok(skipped.some((p) => p.startsWith('P-IDX/P&ID/projects/')), 'örnek müşteri projesi');
+  // Müşteri projeleri açık depoda tutulmaz; kural örnek bir yolla denetlenir
+  assert.equal(PpxKabuk.isProgramFile('P-IDX/P&ID/projects/0000000-ORNEK/pid/cizim.json'), false, 'müşteri projesi programa girmez');
   for (const p of skipped) assert.equal((await serve(caches, PpxKabuk.programUrl(SCOPE, p))).status, 404, p);
   const state = await shell.installed();
   assert.deepEqual(Object.keys(state.files).sort(), [...programFiles().keys()].sort());
