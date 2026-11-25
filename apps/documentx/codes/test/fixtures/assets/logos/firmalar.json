@@ -1,0 +1,8 @@
+{
+  "ORNEK": {
+    "color": "#1f6feb",
+    "footer": "Örnek Makine Ltd",
+    "header": { "type": "logo", "logo": "assets/logos/ornek.svg" },
+    "cover": { "logo": "assets/logos/ornek.svg" }
+  }
+}

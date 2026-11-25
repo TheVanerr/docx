@@ -101,6 +101,7 @@
     async assetReport(guideId) { await ready(); return DXBackend.assetReport(guideId); },
     async optimizeImages(srcs) { return DXAssets.optimizeForPrint(srcs); },
     async readAsset(name) { await ready(); return DXBackend.readAsset(name); },
+    async readBrands() { await ready(); return DXBackend.readBrands(); },
     async dashboard() { await ready(); return DXBackend.dashboard(); },
 
     async printPdf(opts) { return DXExport.printPdf(opts); },

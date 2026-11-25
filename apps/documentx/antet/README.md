@@ -45,4 +45,4 @@ Kapak A ve B uygulamaya aktarıldı (ayrıntı: `codes/layout-rules.md`); varsay
 1. `codes/brands.js` → DOLFIN: `color: '#F60000'`, `header: { type: 'logo', logo: 'assets/logos/dolfin.png' }`.
 2. `codes/cover.js` → `buildCoverPage` Kapak B düzenine göre yeniden yazılır; makine tipi ve seri no DATA'dan (`[PROJE]`), çizim projedeki `assets/` altından, QR veya dil etiketi seçime göre.
 3. `codes/header.js` + `codes/style.css` → antet tek satır bölüm adı; alt bilgiye belge adı, revizyon ve toplam sayfa eklenir.
-4. Diğer firmalar (müşteri firmaları) aynı düzeni kendi logo ve rengiyle kullanır.
+4. Diğer firmalar (çalışma klasöründeki `assets/logos/firmalar.json`) aynı düzeni kendi logo ve rengiyle kullanır.

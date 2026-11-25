@@ -666,11 +666,26 @@ const DXBackend = (() => {
     }
   }
 
+  /* Müşteri firma tanımları kodda değil, çalışma klasöründe durur (codes/brands.js > loadBrands).
+     Dosya yoksa boş liste (yalnız DOLFIN); bozuksa boş liste ve hata metni. */
+  const BRANDS_FILE = 'assets/logos/firmalar.json';
+  async function readBrands() {
+    let f = null;
+    try { f = await DXFS.file(BRANDS_FILE); } catch (e) { f = null; }
+    if (!f) return { ok: true, brands: {} };
+    try {
+      const data = JSON.parse(await f.text());
+      return { ok: true, brands: data && typeof data === 'object' && !Array.isArray(data) ? data : {} };
+    } catch (e) {
+      return { ok: false, brands: {}, error: `${BRANDS_FILE} okunamadı: ${e.message}` };
+    }
+  }
+
   return {
-    DEFAULT_LANG, PROJECTS, TEMPLATES, EXPORTS,
+    DEFAULT_LANG, PROJECTS, TEMPLATES, EXPORTS, BRANDS_FILE,
     guideDirName, findProjectYaml, resolveGuide,
     listGuides, listModels, getGuide, saveGuideMeta, readFile, writeFile, editablePath,
     createProject, translationStatus: translationStatusFor, dashboard, assetReport,
-    gitLog, changedLines, readAsset, diskImagePath
+    gitLog, changedLines, readAsset, diskImagePath, readBrands
   };
 })();

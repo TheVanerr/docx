@@ -126,7 +126,8 @@ async function uiTests(browser, base) {
   check('bağlanınca bağlantı ekranı kapanır', await js(() => !document.getElementById('dxConnect')));
   check('kılavuz seçildi ve çizildi', await js(() => document.querySelectorAll('.a4-page').length > 2));
   check('yaml kapak değerleri kutularda', await js(() => document.getElementById('revInput').value === '01' && document.getElementById('firmaSelect').value === 'ORNEK'));
-  check('firma seçici brands.js\'ten doldu', await js(() => document.querySelectorAll('#firmaSelect option').length === Object.keys(BRANDS).length));
+  check('firma seçici DOLFIN + çalışma klasöründeki firmalar.json ile doldu', await js(() => document.querySelectorAll('#firmaSelect option').length === Object.keys(BRANDS).length
+    && Object.keys(BRANDS).join() === 'DOLFIN,ORNEK' && getBrand('ORNEK').color === '#1f6feb'));
   check('görseller blob adresinden yüklendi (logo)', await js(() => {
     const imgs = [...document.querySelectorAll('#pagesContainer img')];
     return imgs.length > 0 && imgs.every(i => /^blob:/.test(i.getAttribute('src')) && i.complete && i.naturalWidth > 0);

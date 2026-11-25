@@ -17,16 +17,17 @@ Endüstriyel makine **kullanım kılavuzu** (EN ISO 20607 / ISO 12100) üreten r
 - `codes/` — tarayıcı uygulaması (`codes/index.html`; başlatıcı: kökteki **DocumentX** simgesi → `DocumentX.vbs`; simgeyi VBS oluşturur, git'e girmez). Geliştirme notları: **`codes/CLAUDE.md`** (otomatik yüklenir).
 - `templates/` — boş proje iskeleti; `base.yaml` bölüm sırası, `DATA` veri şablonu, `sozluk.yaml` ortak terim sözlüğü.
 - `scripts/` — yardımcı betikler (komutlar `projects/CLAUDE.md`'de).
-- `assets/logos/` — firma logoları; `assets/iso7010/` — ISO 7010 işaretleri.
+- `assets/logos/` — Dolfin logosu; `assets/iso7010/` — ISO 7010 işaretleri.
+- **Veri klasörü ayrıdır** (`Desktop\DOCX\DocumentX`, gizli `DocumentX` deposu; başlatıcı yolu `veri-klasoru.txt`'den okur): `projects/`, müşteri firma logoları ve tanımları (`assets/logos/firmalar.json`, bkz. `codes/brands.js`), projeye özel bakım betikleri, mevcut önizleme adresleri (veri klasörünün CLAUDE.md'si). Bu klasör herkese açık DOCX deposundadır: müşteri ya da proje adı buraya yazılmaz.
 
 ## Önizleme (her değişiklikten sonra)
 
 - Bir kılavuzda veya uygulamada değişiklik yaptıktan sonra önizlemeyi yeniden üret ve yayınla; kullanıcı tarayıcıda bu bağlantıdan bakar:
-  `node scripts/build-preview.js "<proje>" --out <scratchpad>/preview [--base <commit>]` (taban varsayılanı: son değişiklikten önceki commit; kaydedilmemiş değişiklik varsa HEAD).
-- Yayın: Claude Artifact, sayfa `index.html`, `root` = çıktı klasörü, `files` = `publish-files.json`. Scratchpad'deki dosyalar yayında okuma izni kuralına takılırsa `--out` vermeden üret (varsayılan `preview/<proje>/`, git'e girmez) ve oradan yayınla. Proje için önizleme adresi varsa **aynı adrese** (`url`) güncelle; önceki sürümde olup yenisinde olmayan yollar `null` ile kaldırılır.
+  `node scripts/build-preview.js "<proje>" --projects "<veri klasörü>\projects" --out <scratchpad>/preview [--base <commit>]` (taban varsayılanı: son değişiklikten önceki commit; kaydedilmemiş değişiklik varsa HEAD). Şablonlar, logolar ve `firmalar.json` veri klasöründen alınır.
+- Yayın: Claude Artifact, sayfa `index.html`, `root` = çıktı klasörü, `files` = `publish-files.json`. Proje için önizleme adresi varsa **aynı adrese** (`url`) güncelle; önceki sürümde olup yenisinde olmayan yollar `null` ile kaldırılır. Mevcut önizleme adresleri veri klasörünün CLAUDE.md'sindedir.
 - Önizleme salt okunurdur (düzenleme, çıktı, yazdırma yok); kullanıcı bunlar için uygulamayı kendi klasöründe açar (`DocumentX.vbs`).
 
 ## Git
 
-- Commit mesajı Türkçe, ASCII'ye yakın, kısa: `<MÜŞTERİ veya MODEL> <konu>: <ne değişti>.` (ör. `KNV-30: bolum 3.4 guncelleme.`).
+- Program (bu klasör) DOCX deposundadır: commit mesajı kök CLAUDE.md'deki gibi (`documentx: <ne değişti>`). Kılavuz commit'leri veri klasörünün kendi deposuna gider (biçimi oradaki CLAUDE.md'de).
 - `.env` ve `scripts/.translation-state.json` asla commit edilmez.

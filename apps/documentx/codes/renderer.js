@@ -522,6 +522,10 @@ async function initApp() {
     defaultPreparedBy = (settings && settings.hazirlayan) || '';
   } catch (e) { /* varsayılan boş */ }
 
+  // Müşteri firmaları çalışma klasöründen (assets/logos/firmalar.json); kılavuz açılmadan önce
+  await loadBrands();
+  populateFirmaSelect();
+
   if (typeof initSidebar === 'function') initSidebar();
   if (typeof initSearch === 'function') initSearch();
   if (typeof initQc === 'function') initQc();

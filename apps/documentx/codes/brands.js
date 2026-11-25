@@ -1,6 +1,8 @@
-/* Firma tanımları — tek kaynak. Firma seçici, kapak (cover.js), antet ve
-   alt bilgi (header.js) buradan beslenir. Yeni firma = buraya bir kayıt +
-   assets/logos/ altına logo.
+/* Firma tanımları. Firma seçici, kapak (cover.js), antet ve alt bilgi (header.js) buradan beslenir.
+   Kodda yalnız DOLFIN vardır. Diğer firmalar (kılavuzu kendi markasıyla basılan müşteriler) çalışma
+   klasöründe tanımlanır: assets/logos/firmalar.json → { "FIRMA": { color, footer, header, cover } };
+   logolar aynı klasörde. Uygulama açılışta okur (loadBrands); dosya yoksa yalnız DOLFIN kullanılır.
+   Yeni firma = firmalar.json'a bir kayıt + assets/logos/ altına logo (uygulama yeniden açılınca görünür).
 
    color   : kapak şeridi, antet çizgisi, sayfa numarası, alt bilgi rengi
    footer  : numaralı sayfaların sol alt köşesindeki firma adı
@@ -25,30 +27,6 @@ const BRANDS = {
         web: 'https://dolfintr.com'
       }
     }
-  },
-  MUSTERI1: {
-    color: '#007938',
-    footer: 'Musteri 1',
-    header: { type: 'logo', logo: 'assets/logos/musteri1.svg' },
-    cover: { logo: 'assets/logos/musteri1.svg' }
-  },
-  MUSTERI2: {
-    color: '#C41E3A',
-    footer: 'Musteri 2',
-    header: { type: 'logo', logo: 'assets/logos/musteri2.png' },
-    cover: { logo: 'assets/logos/musteri2.png' }
-  },
-  MUSTERI3: {
-    color: '#1B04AE',
-    footer: 'Musteri 3',
-    header: { type: 'logo', logo: 'assets/logos/musteri3.png', logoHeight: 22, logoMaxWidth: 148 },
-    cover: { logo: 'assets/logos/musteri3.png', logoBox: { left: 4.8, top: 14.2, width: 11.2, height: 6.5 } }
-  },
-  MUSTERI4: {
-    color: '#1a1a1a',
-    footer: 'Musteri 4',
-    header: { type: 'logo', logo: 'assets/logos/musteri4.png', logoHeight: 28, logoMaxWidth: 120 },
-    cover: { logo: 'assets/logos/musteri4.png', logoBox: { left: 4.8, top: 14.48, width: 9.0, height: 3.65 } }
   }
 };
 
@@ -56,4 +34,17 @@ const DEFAULT_BRAND = 'DOLFIN';
 
 function getBrand(variant) {
   return BRANDS[String(variant || '').toUpperCase()] || BRANDS[DEFAULT_BRAND];
+}
+
+/** Çalışma klasöründeki firma tanımlarını (assets/logos/firmalar.json) BRANDS'e ekler. DOLFIN değiştirilemez. */
+async function loadBrands() {
+  let r = null;
+  try { r = await window.dxApi.readBrands(); } catch (e) { r = null; }
+  Object.keys(BRANDS).forEach(k => { if (k !== DEFAULT_BRAND) delete BRANDS[k]; });
+  if (!r) return;
+  if (r.error) console.warn(r.error);
+  Object.entries(r.brands || {}).forEach(([key, b]) => {
+    const k = String(key).trim().toUpperCase();
+    if (k && k !== DEFAULT_BRAND && b && typeof b === 'object' && !Array.isArray(b)) BRANDS[k] = b;
+  });
 }

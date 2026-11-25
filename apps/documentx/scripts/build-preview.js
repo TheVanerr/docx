@@ -58,9 +58,10 @@ function prepareOut(dir) {
   fs.writeFileSync(path.join(dir, MARKER), 'DocumentX önizleme çıktısı — yeniden derlemede silinir.\n');
 }
 
-function gitRunner() {
+/* Kılavuzun bulunduğu git deposu (veri klasörü ayrı depodaysa o; değilse programın deposu) */
+function gitRunner(dir) {
   try {
-    const top = execFileSync('git', ['rev-parse', '--show-toplevel'], { cwd: ROOT, encoding: 'utf8' }).trim();
+    const top = execFileSync('git', ['rev-parse', '--show-toplevel'], { cwd: dir || ROOT, encoding: 'utf8' }).trim();
     const git = (...args) => execFileSync('git', ['-c', 'core.quotepath=false', ...args], { cwd: top, encoding: 'utf8', maxBuffer: 1 << 28 });
     return { top: path.resolve(top), git };
   } catch (e) {
@@ -160,13 +161,20 @@ function main() {
     else if (inAssets && /\.marks\.json$/i.test(base)) addText(abs, rel);
     else if (!inAssets && (/\.md$/i.test(base) || /\.ya?ml$/i.test(base) || /(^|\s)DATA$/.test(base))) addText(abs, rel);
   });
-  // Uygulamanın okuduğu ortak dosyalar: templates/*.yaml (sözlük, taban bölüm listesi) ve templates/ortak/ parçaları.
-  const T = path.join(ROOT, 'templates');
-  if (fs.existsSync(T)) fs.readdirSync(T).filter(f => /\.ya?ml$/i.test(f)).forEach(f => addText(path.join(T, f), 'templates/' + f));
-  walk(path.join(T, 'ortak')).filter(a => /\.md$/i.test(a)).forEach(abs => addText(abs, 'templates/ortak/' + posix(path.relative(path.join(T, 'ortak'), abs))));
-  ['labels', 'logos', 'iso7010'].forEach(d => {
-    walk(path.join(ROOT, 'assets', d)).filter(a => IMG_RX.test(a)).forEach(abs => addImage(abs, 'assets/' + d + '/' + posix(path.relative(path.join(ROOT, 'assets', d), abs))));
-  });
+  // Uygulamanın okuduğu ortak dosyalar: templates/*.yaml (sözlük, taban bölüm listesi), templates/ortak/ parçaları,
+  // assets/ görselleri ve müşteri firma tanımları (assets/logos/firmalar.json). Önce program klasöründeki (ROOT),
+  // sonra çalışma klasöründeki (projects/ klasörünün üstü) kopya; aynı yolda çalışma klasörününki geçerlidir.
+  const WS = path.resolve(projectsDir, '..');
+  for (const K of WS === ROOT ? [ROOT] : [ROOT, WS]) {
+    const T = path.join(K, 'templates');
+    if (fs.existsSync(T)) fs.readdirSync(T).filter(f => /\.ya?ml$/i.test(f)).forEach(f => addText(path.join(T, f), 'templates/' + f));
+    walk(path.join(T, 'ortak')).filter(a => /\.md$/i.test(a)).forEach(abs => addText(abs, 'templates/ortak/' + posix(path.relative(path.join(T, 'ortak'), abs))));
+    ['labels', 'logos', 'iso7010'].forEach(d => {
+      walk(path.join(K, 'assets', d)).filter(a => IMG_RX.test(a)).forEach(abs => addImage(abs, 'assets/' + d + '/' + posix(path.relative(path.join(K, 'assets', d), abs))));
+    });
+    const firmalar = path.join(K, 'assets', 'logos', 'firmalar.json');
+    if (fs.existsSync(firmalar)) addText(firmalar, 'assets/logos/firmalar.json');
+  }
   if (model && model !== name.toLowerCase()) {
     const kapak = path.join(projectsDir, model, 'assets', 'kapak');
     walk(kapak).filter(a => IMG_RX.test(a)).forEach(abs => addImage(abs, `projects/${model}/assets/kapak/` + posix(path.relative(kapak, abs))));
@@ -174,7 +182,7 @@ function main() {
 
   /* ── git: commit listesi ve tabanlara göre değişen satırlar ── */
   const gitData = { head: '', base: '', commits: [], changed: {} };
-  const G = gitRunner();
+  const G = gitRunner(projAbs);
   const repoDir = G && posix(path.relative(G.top, projAbs));
   if (G && repoDir && !repoDir.startsWith('..')) {
     const toBundle = (p) => (p === repoDir || p.startsWith(repoDir + '/') ? projRel + p.slice(repoDir.length) : null);

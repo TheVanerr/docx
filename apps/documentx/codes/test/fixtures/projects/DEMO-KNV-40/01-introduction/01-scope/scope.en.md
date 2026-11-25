@@ -4,4 +4,4 @@ The manual covers transport, assembly, operation, maintenance and dismantling. F
 
 **WARNING — Crushing:** The conveyor chain can trap fingers. Stop the machine before opening the guards.
 
-![General view](../../assets/logos/musteri1.svg)
+![General view](../../assets/logos/ornek.svg)

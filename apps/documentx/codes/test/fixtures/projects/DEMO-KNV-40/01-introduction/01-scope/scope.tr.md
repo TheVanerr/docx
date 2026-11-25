@@ -4,4 +4,4 @@ Kılavuz; nakliye, montaj, işletim, bakım ve sökme aşamalarını kapsar. Bak
 
 **UYARI — Ezilme:** Konveyör zinciri parmakları sıkıştırabilir. Koruyucuları açmadan önce makineyi durdurun.
 
-![Genel görünüş](../../assets/logos/musteri1.svg)
+![Genel görünüş](../../assets/logos/ornek.svg)

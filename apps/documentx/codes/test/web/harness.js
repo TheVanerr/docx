@@ -66,6 +66,8 @@ function workspaceFiles(projects) {
   const add = (srcDir, destDir) => walk(path.join(ROOT, srcDir)).forEach(f => { map[destDir + '/' + f] = srcDir + '/' + f; });
   add('templates', 'templates');
   ['labels', 'logos', 'iso7010'].forEach(d => add('assets/' + d, 'assets/' + d));
+  // Test verisinin kendi çalışma klasörü dosyaları (kurgusal firma: assets/logos/firmalar.json + ornek.svg)
+  add('codes/test/fixtures/assets', 'assets');
   Object.entries(projects).forEach(([name, src]) => add(src, 'projects/' + name));
   return map;
 }
