@@ -38,9 +38,6 @@ jobs:
       - name: P&PX
         working-directory: apps/ppx
         run: npm test
-      - name: ControlX
-        working-directory: apps/controlx
-        run: npm test
       - name: DocumentX (birim testleri)
         working-directory: apps/documentx/codes
         run: npm run test:unit

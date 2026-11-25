@@ -12,7 +12,6 @@ Dolfin makine dokümantasyonu uygulamaları tek depoda. Her uygulama kendi klas�
 | `apps/layoutx` | Layout (STEP'ten pafta) |
 | `apps/bomx` | Malzeme listesi (BOM) |
 | `apps/warrantyx` | Garanti belgesi ve CE uygunluk beyanı |
-| `apps/controlx` | Saha görevleri ve sevk takibi |
 
 ## Yayın
 
@@ -20,7 +19,7 @@ Dolfin makine dokümantasyonu uygulamaları tek depoda. Her uygulama kendi klas�
 `araclar/site-hazirla.mjs` ile hazırlanıp GitHub Pages'e çıkar. Yerelde denemek için: `node araclar/site-hazirla.mjs _site`.
 
 - Adresler: `https://thevanerr.github.io/docx/` (açılış), `…/docx/bomx/`, `…/docx/rax/`, `…/docx/warrantyx/`,
-  `…/docx/layoutx/`, `…/docx/electricx/`, `…/docx/controlx/`.
+  `…/docx/layoutx/`, `…/docx/electricx/`.
 - P&PX şimdilik eski adresinde (`https://thevanerr.github.io/P-PX/`): giriş kabuğu programı eski depodan indiriyor;
   tek kabuk adımında buraya taşınacak.
 - DocumentX masaüstünde klasörden açılır, yayına girmez.

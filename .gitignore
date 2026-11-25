@@ -12,6 +12,14 @@ desktop.ini
 Desktop.ini
 .DS_Store
 
+# Güvenlik ağı: belge, imza, kısayol ve veri deposu çalışma kopyası açık depoya yanlışlıkla eklenmez
+# (depoda izlenen tek PDF apps/documentx/antet/onizleme.pdf; izlenen dosya etkilenmez)
+*.pdf
+*.PDF
+imzalar/
+*.lnk
+.veri.git/
+
 # Büyük / müşteriye ait dosya türleri hiçbir uygulama klasöründe izlenmez
 *.step
 *.STEP

@@ -8,7 +8,6 @@
    - rax:       app/ klasörü (araclar/, *.md, kisayol-olustur.* hariç), sw.js sürüm damgası
    - layoutx:   apps/layoutx/tools/build_site.py
    - electricx: program dosyaları (.md, .py, .url ve nokta ile başlayanlar hariç)
-   - controlx:  program dosyaları (test/, package.json, belgeler hariç)
    P&PX (giriş kabuğu programı eski depodan indiriyor) ve DocumentX (masaüstü) bu adımda yayına girmez. */
 
 import { execFileSync } from 'node:child_process';
@@ -70,9 +69,6 @@ calistir(PYTHON, ['tools/build_site.py', path.join(OUT, 'layoutx'), `--version=$
 
 // ELECTRICX
 kopyala('apps/electricx', path.join(OUT, 'electricx'), (y) => !noktali(y) && !/\.(md|py|url)$/i.test(y));
-
-// ControlX
-kopyala('apps/controlx', path.join(OUT, 'controlx'), (y) => !noktali(y) && !y.startsWith('test/') && !['package.json', 'README.md'].includes(y));
 
 // Açılış sayfası
 fs.copyFileSync(path.join(ROOT, 'araclar', 'acilis.html'), path.join(OUT, 'index.html'));
