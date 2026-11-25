@@ -50,12 +50,11 @@ jobs:
           python -m py_compile layout_app.py layout_db.py tools/build_site.py
           python tools/test_layout_db.py
 
-  yayin:
+  # Site ayrı işte üretilip yüklenir; dağıtım ayrı işte, paket kesinleştikten sonra başlar
+  # (aynı işte yükleyip hemen dağıtınca deploy-pages paketi bazen bulamıyor: "No artifacts named github-pages").
+  site:
     needs: test
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
@@ -70,5 +69,13 @@ jobs:
       - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
+
+  yayin:
+    needs: site
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - id: deployment
         uses: actions/deploy-pages@v5
