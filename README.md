@@ -20,12 +20,38 @@ açık uygulamalar yerinde kalır, aralarında geçince durum kaybolmaz.
 
 Her uygulama kendi klasöründe de tek başına çalışır (kendi README ve CLAUDE.md dosyası yanındadır).
 
+## Makine sayfası
+
+Çubuğun en üstündeki **Makine** (`#makine`): her seri numarası için bir makine kartı. Karta tıklayınca o makinenin
+belgeleri (`#makine/<seri>`), belgeye tıklayınca uygulaması o belgede açılır. Ayrı kayıt tutulmaz; kartlar
+uygulamaların kendi verisinden kendiliğinden oluşur. Makine = 7 haneli seri numarası: uygulamalar proje klasörünü
+`<seri>-<FİRMA>-<MODEL>` diye adlandırır (garanti, CE ve makine kodlarında seri dosya adındadır).
+
+| Belge | Uygulama | Nereden |
+|---|---|---|
+| Layout paftası | LAYOUTX | `projects/<seri>-…/*-layout-veri.json` |
+| P&ID diyagramı, Pnömatik diyagram, Makine kodları | P&PX | `P&ID/projects/<seri>-…/pid/cizim.json`, `PNOMATIK/projects/<seri>-…/pnomatik/cizim.json`, `ML/kayitlar/<seri>.json` |
+| Malzeme listesi (BOM) | BOMX | `BOM/projeler/<seri>-…/proje.json` |
+| Pano malzeme listesi, Pano etiketi, Elektrik şeması | ELECTRICX | `KUTU/projeler/<seri>-…/`, `ETIKET/projeler/*.json`, `ES/*.pdf` (seri adın içinde) |
+| Risk analizi, LVD test raporu | R&AX | `projects/<seri>-…/`, `models/…/raporlar/<seri>-…/`, `lvd/<seri>-…/lvd.md` |
+| Kullanım kılavuzu | DocumentX | bilgisayardaki DocumentX klasörü: `projects/<seri>-…/` |
+| Garanti belgesi, CE uygunluk beyanı | WARRANTYX | `belgeler/<seri>.json`, `ce/<seri>.json` |
+
+- Kaynak: uygulamanın bu tarayıcıdaki kopyası (gönderilmemiş değişiklik dahil) + bağlı olduğu GitHub deposu (uygulamanın
+  kendi ayarındaki depo ve anahtarla, yalnız okuma; başka cihazda yapılan belge de görünür). R&AX ve DocumentX
+  klasörle çalışıyorsa klasör okunur; tarayıcı izin isterse sayfadaki düğmeyle verilir. Hiçbir uygulamanın verisine yazılmaz.
+- Bir uygulama bu tarayıcıda hiç bağlanmamışsa belgeleri görünmez (sayfanın üstündeki kaynak satırı durumu yazar).
+- Kurallar `kabuk/makine-cekirdek.js` (test: `node araclar/makine-test.js`), sayfa `kabuk/makine.js`. Uygulamalar
+  doğrudan bağlantıyı kendisi karşılar: BOMX `?proje=`, P&PX `#ac=pid|pnomatik&proje=`, R&AX `?ac=` / `?lvd=`,
+  LAYOUTX `?p=`, ELECTRICX `#kutu/p/<proje>`, WARRANTYX `#/belge/<seri>` / `#/ce/<seri>`, DocumentX son açılan kılavuz.
+
 | Kök | İçerik |
 |---|---|
-| `index.html`, `kabuk/` | DOCX kabuğu: uygulama çubuğu, ana ekran, uygulama çerçeveleri |
+| `index.html`, `kabuk/` | DOCX kabuğu: uygulama çubuğu, ana ekran, makine sayfası, uygulama çerçeveleri |
 | `ortak/` | Ortak tema (`tema.css`) ve Dolfin logosu |
 | `manifest.webmanifest`, `sw.js` | DOCX'in uygulama olarak kurulması, çevrimdışı açılış |
 | `araclar/site-hazirla.mjs` | Yayın sitesi |
+| `araclar/makine-test.js` | Makine sayfası kurallarının testi |
 
 ## DocumentX ve SoftwareX: yerel klasörle çalışan uygulamalar
 

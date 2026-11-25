@@ -4,7 +4,7 @@
 const SURUM = 'gelistirme';
 const ONEK = 'docx-kabuk-';
 const ONBELLEK = ONEK + SURUM;
-const DOSYALAR = ['index.html', 'manifest.webmanifest', 'ortak/tema.css', 'ortak/dolfin.png', 'kabuk/kabuk.css', 'kabuk/kabuk.js', 'kabuk/simge.svg'];
+const DOSYALAR = ['index.html', 'manifest.webmanifest', 'ortak/tema.css', 'ortak/dolfin.png', 'kabuk/kabuk.css', 'kabuk/kabuk.js', 'kabuk/makine-cekirdek.js', 'kabuk/makine.js', 'kabuk/simge.svg', 'kabuk/simgeler/makine.svg'];
 const LISTE = new Set(DOSYALAR);
 const KAPSAM = new URL(self.registration.scope).pathname;
 

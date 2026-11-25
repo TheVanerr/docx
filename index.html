@@ -54,6 +54,28 @@
       </main>
     </section>
 
+    <section id="makine" aria-label="Makineler" hidden>
+      <main>
+        <div id="mkListeAlani">
+          <h1>Makineler</h1>
+          <p class="alt">Seri numarasıyla kaydedilen belgeler makineye göre toplanır: BOM, P&amp;ID, pnömatik, pano, layout, risk analizi, LVD, kılavuz, garanti, CE. Makineye tıklayınca belgeleri, belgeye tıklayınca uygulaması açılır.</p>
+          <div class="mk-arac">
+            <input type="search" id="mkAra" class="mk-ara" placeholder="Seri no, model ya da firma ara…" aria-label="Makine ara" autocomplete="off" spellcheck="false">
+            <select id="mkSira" class="mk-sira" aria-label="Sıralama">
+              <option value="son">Son değişen önce</option>
+              <option value="seri">Seri numarasına göre</option>
+            </select>
+            <span class="mk-sayi" id="mkSayi"></span>
+            <button type="button" class="btn btn-sm" id="mkYenile" title="Bu cihazdaki kopyaları ve depoları yeniden oku">Yenile</button>
+          </div>
+          <div class="mk-kaynaklar" id="mkKaynaklar" aria-label="Kaynaklar"></div>
+          <div id="mkListe"></div>
+        </div>
+        <div id="mkDetay" hidden></div>
+      </main>
+      <div class="mk-bildirim" id="mkBildirim" role="status" hidden></div>
+    </section>
+
     <section class="klasor-paneli" id="klasorPaneli" hidden>
       <div class="panel">
         <h1><span id="klasorAd"></span> ayrı pencerede açılır</h1>
@@ -67,6 +89,8 @@
     </section>
   </div>
 
+  <script src="kabuk/makine-cekirdek.js"></script>
+  <script src="kabuk/makine.js"></script>
   <script src="kabuk/kabuk.js"></script>
 </body>
 </html>
