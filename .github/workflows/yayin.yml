@@ -1,0 +1,74 @@
+# Tek yayın: main'e her gönderimde bütün uygulamaların testleri çalışır; hepsi geçerse site
+# GitHub Pages'e çıkar (https://thevanerr.github.io/docx/<uygulama>/). Test geçmezse yayın olmaz,
+# açık sürüm değişmez. Bir kez: Settings → Pages → Build and deployment → Source: "GitHub Actions".
+# Not: apps/*/.github klasörleri eski depolardan kaldı; GitHub yalnız bu kök iş akışını çalıştırır.
+name: Yayın
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: BOMX
+        working-directory: apps/bomx
+        run: npm test
+      - name: WarrantyX
+        working-directory: apps/warrantyx
+        run: npm test
+      - name: P&PX
+        working-directory: apps/ppx
+        run: npm test
+      - name: ControlX
+        working-directory: apps/controlx
+        run: npm test
+      - name: DocumentX (birim testleri)
+        working-directory: apps/documentx/codes
+        run: npm run test:unit
+      - name: LayoutX
+        working-directory: apps/layoutx
+        run: |
+          python -m py_compile layout_app.py layout_db.py tools/build_site.py
+          python tools/test_layout_db.py
+
+  yayin:
+    needs: test
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Site
+        run: node araclar/site-hazirla.mjs _site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4

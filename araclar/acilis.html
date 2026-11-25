@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DOCX</title>
+<style>
+  :root { --zemin: #f6f6f4; --kart: #ffffff; --yazi: #1d1d1f; --soluk: #6b6b70; --cizgi: #e2e2df; --vurgu: #c8102e; }
+  @media (prefers-color-scheme: dark) {
+    :root { --zemin: #141416; --kart: #1e1e21; --yazi: #ececee; --soluk: #9a9aa0; --cizgi: #2e2e33; --vurgu: #ff4d5e; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--zemin); color: var(--yazi); font: 16px/1.5 "Segoe UI", system-ui, sans-serif; }
+  main { max-width: 960px; margin: 0 auto; padding: 32px 16px 48px; }
+  h1 { margin: 0 0 4px; font-size: 28px; letter-spacing: 0.02em; }
+  h1 span { color: var(--vurgu); }
+  p.alt { margin: 0 0 24px; color: var(--soluk); }
+  .izgara { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  a.kart, div.kart { display: block; padding: 16px 18px; background: var(--kart); border: 1px solid var(--cizgi); border-radius: 10px; color: inherit; text-decoration: none; }
+  a.kart:hover { border-color: var(--vurgu); }
+  .kart b { display: block; font-size: 17px; }
+  .kart small { color: var(--soluk); }
+  .not { margin-top: 24px; color: var(--soluk); font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>DOCX<span>.</span></h1>
+  <p class="alt">Dolfin makine dokümantasyonu uygulamaları</p>
+  <div class="izgara">
+    <a class="kart" href="./rax/"><b>R&amp;AX</b><small>Risk analizi ve LVD test raporu</small></a>
+    <a class="kart" href="./electricx/"><b>ELECTRICX</b><small>Pano malzeme listesi, etiket, şema çeviri</small></a>
+    <a class="kart" href="./layoutx/"><b>LAYOUTX</b><small>Layout paftası</small></a>
+    <a class="kart" href="./bomx/"><b>BOMX</b><small>Malzeme listesi</small></a>
+    <a class="kart" href="./warrantyx/"><b>WARRANTYX</b><small>Garanti belgesi ve CE uygunluk beyanı</small></a>
+    <a class="kart" href="./controlx/"><b>CONTROLX</b><small>Saha görevleri ve sevk takibi</small></a>
+    <a class="kart" href="https://thevanerr.github.io/P-PX/"><b>P&amp;PX</b><small>P&amp;ID ve pnömatik (şimdilik eski adresinde)</small></a>
+    <div class="kart"><b>DocumentX</b><small>Kullanım kılavuzu: bilgisayarda klasörden açılır</small></div>
+  </div>
+  <p class="not">Veriler gizli veri depolarındadır; her uygulama kendi erişim anahtarıyla bağlanır.</p>
+</main>
+</body>
+</html>
