@@ -1,0 +1,448 @@
+/* Web uygulamasının gerçek tarayıcıda denenmesi: Edge ya da Chrome görünmez açılır, kabuk (pwa/) bu bilgisayardan
+   GitHub Pages gibi sunulur, GitHub API'si sahte depoyla karşılanır (tarayıcının geliştirici bağlantısıyla).
+   Hiçbir şey internete gitmez. npm test'e dahil değildir: npm run test:tarayici
+   İki sahte depo: özel veri deposu (ben/ppx-veri) ve herkese açık program deposu (ben/P-PX, bu depodaki dosyalar).
+   Denenenler: anahtarsız site boş, giriş, iki program, müşteri verisi inmez, tam yenileme, çevrimdışı açılış,
+   main'e push sonrası yeni sürüm, anahtar iptali, çıkış. */
+
+const http = require('node:http');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const { spawn, execFileSync } = require('node:child_process');
+
+const PpxDb = require('../ortak/ppx-db.js');
+const PpxFs = require('../ortak/ppx-fs.js');
+const PpxGitHub = require('../ortak/ppx-github.js');
+const { createFakeGitHub } = require('./fake-github.js');
+
+const ROOT = path.join(__dirname, '..');
+const PWA = path.join(ROOT, 'pwa');
+const SITE = '/P-PX/';
+const PROGRAM_REPO = 'ben/P-PX';
+// Site GitHub Pages adıyla açılır (tarayıcı bu adı bu bilgisayara yönlendirir): program deposu adresten anlaşılır
+const HOST = 'ben.github.io';
+const BROWSERS = [
+  'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
+  'C:/Program Files/Microsoft/Edge/Application/msedge.exe',
+  'C:/Program Files/Google/Chrome/Application/chrome.exe',
+  '/usr/bin/google-chrome',
+  '/usr/bin/chromium',
+  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+];
+const TYPES = { html: 'text/html; charset=utf-8', js: 'text/javascript; charset=utf-8', webmanifest: 'application/manifest+json', png: 'image/png', svg: 'image/svg+xml' };
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+let failures = 0;
+function check(ok, label, detail) {
+  console.log(`${ok ? '✔' : '✖'} ${label}${!ok && detail ? `\n    ${detail}` : ''}`);
+  if (!ok) failures += 1;
+}
+
+/* ─── Sahte GitHub: veri özel depoda, program bu deponun main dalında ── */
+
+/** Program deposunun main dalı: bu depodaki bütün izlenen dosyalar (müşteri verisi ve testler dahil) */
+function repoFiles(marker) {
+  const files = new Map();
+  for (const p of execFileSync('git', ['ls-files', '-z'], { cwd: ROOT }).toString('utf8').split('\0').filter(Boolean)) {
+    if (fs.existsSync(path.join(ROOT, p))) files.set(p, fs.readFileSync(path.join(ROOT, p)));
+  }
+  if (marker) {
+    files.set('index.html', Buffer.from(files.get('index.html').toString('utf8').replace('<h1>P&amp;PX</h1>', `<h1>P&amp;PX <span id="surum">${marker}</span></h1>`)));
+    // P&ID sayfası da sürümü taşır: programın içindeyken gelen güncelleme denenir
+    const pid = 'P-IDX/P&ID/codes/cizim.html';
+    files.set(pid, Buffer.from(files.get(pid).toString('utf8').replace('</head>', `<meta name="ppx-test-surum" content="${marker}"></head>`)));
+  }
+  return files;
+}
+
+/** Programların klasörden aktardığı veriler: iki programın data, assets, projects ve ML klasörleri */
+async function seedData(hub) {
+  const db = PpxDb.createDb({ local: PpxDb.memoryLocal(), remote: PpxGitHub.createRemote({ repo: hub.id, token: hub.token, fetchFn: hub.fetchFn }), flushMs: 3600000 });
+  const walk = (dir, rel) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((d) => (d.isDirectory()
+    ? walk(path.join(dir, d.name), rel ? `${rel}/${d.name}` : d.name)
+    : [{ file: path.join(dir, d.name), rel: rel ? `${rel}/${d.name}` : d.name }]));
+  for (const source of ['P-IDX', 'PNOMATIKX']) {
+    for (const { file, rel } of walk(path.join(ROOT, source), '')) {
+      if (!PpxFs.IMPORT_RULES.some((r) => r.test(rel)) || rel.endsWith('.gitkeep') || fs.statSync(file).size > PpxFs.MAX_IMPORT_BYTES) continue;
+      await db.write(rel, new Uint8Array(fs.readFileSync(file)));
+    }
+  }
+  for (let i = 0; i < 5 && (await db.sync()).pending; i += 1);
+}
+
+/* ─── GitHub Pages gibi sunucu: /P-PX/ altında pwa/, olmayan adreste 404.html ── */
+
+function startSite() {
+  let online = true;
+  const stats = { appMisses: 0 };
+  const server = http.createServer((req, res) => {
+    if (!online) {
+      req.socket.destroy();
+      return;
+    }
+    const url = new URL(req.url, 'http://localhost');
+    if (url.pathname === SITE.slice(0, -1)) {
+      res.writeHead(301, { Location: SITE });
+      res.end();
+      return;
+    }
+    let rel = url.pathname.startsWith(SITE) ? decodeURIComponent(url.pathname.slice(SITE.length)) : null;
+    if (rel === '') rel = 'index.html';
+    const file = rel && !rel.includes('..') ? path.join(PWA, rel) : null;
+    const headers = { 'Cache-Control': 'max-age=600' };
+    if (file && fs.existsSync(file) && fs.statSync(file).isFile()) {
+      res.writeHead(200, Object.assign(headers, { 'Content-Type': TYPES[file.split('.').pop()] || 'application/octet-stream' }));
+      res.end(fs.readFileSync(file));
+      return;
+    }
+    if (url.pathname.startsWith(`${SITE}app/`)) stats.appMisses += 1;
+    res.writeHead(404, Object.assign(headers, { 'Content-Type': TYPES.html }));
+    res.end(fs.readFileSync(path.join(PWA, '404.html')));
+  });
+  return new Promise((resolve) => server.listen(0, '127.0.0.1', () => resolve({
+    server,
+    port: server.address().port,
+    stats,
+    setOnline: (value) => { online = value; }
+  })));
+}
+
+/* ─── Tarayıcı ve geliştirici bağlantısı ─────────────────── */
+
+async function launchBrowser(sitePort) {
+  const exe = BROWSERS.find((p) => fs.existsSync(p));
+  if (!exe) throw new Error('Edge ya da Chrome bulunamadı');
+  const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'ppx-tarayici-'));
+  const port = 9300 + Math.floor(Math.random() * 500);
+  const proc = spawn(exe, [
+    '--headless=new', `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`,
+    '--no-first-run', '--no-default-browser-check', '--disable-extensions', '--disable-sync',
+    `--host-resolver-rules=MAP ${HOST} 127.0.0.1`, `--unsafely-treat-insecure-origin-as-secure=http://${HOST}:${sitePort}`, 'about:blank'
+  ], { stdio: 'ignore' });
+  for (let i = 0; i < 100; i += 1) {
+    try {
+      const info = await (await fetch(`http://127.0.0.1:${port}/json/version`)).json();
+      return { proc, profile, ws: info.webSocketDebuggerUrl };
+    } catch {
+      await sleep(100);
+    }
+  }
+  throw new Error('Tarayıcı açılmadı');
+}
+
+function cdp(wsUrl) {
+  const ws = new WebSocket(wsUrl);
+  let id = 0;
+  const pending = new Map();
+  const listeners = [];
+  ws.onmessage = (m) => {
+    const msg = JSON.parse(m.data);
+    if (msg.id && pending.has(msg.id)) {
+      const { resolve, reject } = pending.get(msg.id);
+      pending.delete(msg.id);
+      if (msg.error) reject(new Error(`${msg.error.message}`));
+      else resolve(msg.result);
+    } else if (msg.method) {
+      for (const fn of listeners) fn(msg);
+    }
+  };
+  const opened = new Promise((r) => { ws.onopen = r; });
+  return {
+    opened,
+    send: (method, params, sessionId) => new Promise((resolve, reject) => {
+      id += 1;
+      pending.set(id, { resolve, reject });
+      ws.send(JSON.stringify({ id, method, params: params || {}, sessionId }));
+    }),
+    on: (fn) => listeners.push(fn),
+    close: () => ws.close()
+  };
+}
+
+async function main() {
+  const hub = createFakeGitHub({ owner: 'ben', name: 'ppx-veri', token: 'gizli-anahtar' });
+  const code = createFakeGitHub({ owner: 'ben', name: 'P-PX', token: 'gizli-anahtar', isPrivate: false });
+  await seedData(hub);
+  code.publish('main', repoFiles());
+  const site = await startSite();
+  const base = `http://${HOST}:${site.port}${SITE}`;
+  const browser = await launchBrowser(site.port);
+  const client = cdp(browser.ws);
+  await client.opened;
+
+  const { targetId } = await client.send('Target.createTarget', { url: 'about:blank' });
+  const { sessionId } = await client.send('Target.attachToTarget', { targetId, flatten: true });
+  const send = (method, params) => client.send(method, params, sessionId);
+
+  const errors = [];
+  let apiDown = false;
+  const cors = [
+    { name: 'Access-Control-Allow-Origin', value: '*' },
+    { name: 'Access-Control-Allow-Headers', value: 'Authorization, Content-Type, Accept' },
+    { name: 'Access-Control-Allow-Methods', value: 'GET, POST, PATCH, PUT, DELETE' },
+    { name: 'Content-Type', value: 'application/json; charset=utf-8' }
+  ];
+  client.on(async (msg) => {
+    if (msg.sessionId !== sessionId) return;
+    if (msg.method === 'Runtime.exceptionThrown') errors.push(msg.params.exceptionDetails.exception?.description || msg.params.exceptionDetails.text);
+    if (msg.method === 'Log.entryAdded' && msg.params.entry.level === 'error' && !/404|Failed to load resource|ERR_INTERNET_DISCONNECTED|ERR_CONNECTION/.test(msg.params.entry.text)) errors.push(msg.params.entry.text);
+    // Sayfa değişirken iptal olan isteğin ya da pencerenin yanıtı reddedilir; önemsizdir
+    const quiet = (method, params) => send(method, params).catch(() => {});
+    if (msg.method === 'Page.javascriptDialogOpening') quiet('Page.handleJavaScriptDialog', { accept: true });
+    if (msg.method !== 'Fetch.requestPaused') return;
+    const { requestId, request } = msg.params;
+    if (apiDown) {
+      quiet('Fetch.failRequest', { requestId, errorReason: 'InternetDisconnected' });
+      return;
+    }
+    if (request.method === 'OPTIONS') {
+      quiet('Fetch.fulfillRequest', { requestId, responseCode: 204, responseHeaders: cors });
+      return;
+    }
+    const target = request.url.replace('https://api.github.com', '');
+    const repo = target.startsWith(`/repos/${PROGRAM_REPO}`) ? code : hub;
+    const res = await repo.handle(request.method, target, request.postData ? JSON.parse(request.postData) : null, request.headers);
+    const headers = cors.concat(Object.entries(res.headers || {}).map(([name, value]) => ({ name, value: String(value) })));
+    quiet('Fetch.fulfillRequest', { requestId, responseCode: res.status, responseHeaders: headers, body: Buffer.from(JSON.stringify(res.json)).toString('base64') });
+  });
+  await send('Page.enable');
+  await send('Runtime.enable');
+  await send('Log.enable');
+  await send('Fetch.enable', { patterns: [{ urlPattern: 'https://api.github.com/*', requestStage: 'Request' }] });
+
+  const evaluate = async (expression) => {
+    const r = await send('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true });
+    if (r.exceptionDetails) throw new Error(r.exceptionDetails.exception?.description || r.exceptionDetails.text);
+    return r.result.value;
+  };
+  const safeEval = (expression) => evaluate(expression).catch(() => undefined);
+  async function waitFor(expression, label, timeout) {
+    const end = Date.now() + (timeout || 20000);
+    let last;
+    while (Date.now() < end) {
+      last = await safeEval(expression);
+      if (last) return last;
+      await sleep(150);
+    }
+    throw new Error(`Beklenen olmadı: ${label} (adres: ${await safeEval('location.href')})`);
+  }
+  const go = (url) => send('Page.navigate', { url });
+  const visible = (id) => `(() => { const el = document.getElementById('${id}'); return !!el && !el.hidden && el.offsetParent !== null; })()`;
+
+  try {
+    /* 1. Anahtarsız: yalnız giriş ekranı, app/ altında hiçbir şey */
+    await go(base);
+    await waitFor(visible('login'), 'giriş ekranı');
+    check(true, 'anahtarsız açılışta giriş ekranı görünür');
+    const leaked = await evaluate(`fetch('app/index.html').then(async (r) => ({ status: r.status, url: r.url, text: await r.text() }))`);
+    check(!/PpxBoot|ppx-boot/.test(leaked.text), 'anahtarsız app/index.html program içermez', JSON.stringify(leaked).slice(0, 200));
+    const script = await evaluate(`fetch('app/ortak/ppx-db.js').then((r) => r.status)`);
+    check(script === 404, 'anahtarsız program dosyası 404 döner', script);
+    await go(`${base}app/P-IDX/P%26ID/codes/cizim.html`);
+    await waitFor(`location.href === '${base}' && ${visible('login')}`, 'program sayfasından giriş ekranına dönüş');
+    check(true, 'anahtarsız program sayfası giriş ekranına döner');
+
+    /* 2. Yanlış anahtar */
+    await evaluate(`document.getElementById('repo').value = 'ben/ppx-veri'; document.getElementById('token').value = 'yanlis'; document.getElementById('login').requestSubmit(); true`);
+    await waitFor(`/geçersiz/.test(document.getElementById('loginMsg').textContent)`, 'yanlış anahtar uyarısı');
+    check(true, 'yanlış anahtar reddedilir');
+
+    /* 3. Giriş: program iner, ana ekran açılır, veri depodan gelir */
+    await evaluate(`document.getElementById('token').value = 'gizli-anahtar'; document.getElementById('login').requestSubmit(); true`);
+    await waitFor(`location.pathname.endsWith('${SITE}app/index.html')`, 'ana ekrana geçiş', 30000);
+    await waitFor(`/GitHub deposu: ben\\/ppx-veri/.test(document.getElementById('dbInfo').textContent)`, 'veritabanı bilgisi', 30000);
+    const info = await evaluate(`({ pwa: PpxBoot.pwa, db: document.getElementById('dbInfo').textContent, pid: document.getElementById('pidInfo').textContent,
+      local: document.getElementById('localOnly').hidden, out: document.getElementById('disconnect').textContent,
+      manifest: !!document.querySelector('link[rel=manifest]') })`);
+    check(info.pwa === true, 'ana ekran web uygulaması kipinde');
+    check(/[1-9]\d* proje/.test(info.pid), 'P&ID projeleri depodan geldi', info.pid);
+    check(info.local === true && info.out === 'Çıkış yap', 'yerel mod gizli, "Çıkış yap" var', JSON.stringify(info));
+    check(info.manifest, 'ana ekran uygulama bildirimini taşır (yüklenebilir)');
+    const version = await waitFor(`(document.getElementById('programInfo').textContent.match(/Program sürümü: ([0-9a-f]{7})/) || [])[1]`, 'program sürümü satırı');
+    check(version === code.headSha().slice(0, 7), 'ana ekran çalışan program sürümünü gösterir', `${version} / ${code.headSha().slice(0, 7)}`);
+    await evaluate(`document.getElementById('checkUpdate').click(); true`);
+    await waitFor(`/Program güncel\\./.test(document.getElementById('result').textContent)`, '"Program güncel."');
+    check(true, '"Güncellemeleri denetle" programın güncel olduğunu söyler');
+    const leakedData = await evaluate(`Promise.all(['app/P-IDX/ML/kayitlar/kodlar.json', 'app/test/ppx.test.js', 'app/README.md'].map((u) => fetch(u).then((r) => r.status)))`);
+    check(leakedData.every((s) => s === 404), 'program deposundaki müşteri verisi, testler ve belgeler cihaza inmez', JSON.stringify(leakedData));
+
+    /* 4. İki program açılır */
+    await evaluate(`document.querySelector('a.app[href*="P-IDX"]').click(); true`);
+    await waitFor(`location.pathname.includes('/app/P-IDX/') && document.querySelectorAll('#projectList > *').length > 0`, 'P&ID proje listesi', 30000);
+    check(true, 'P&ID programı açılır, projeler listelenir');
+    const logo = await evaluate(`(() => { const img = document.querySelector('.home-logo'); return img && img.complete && img.naturalWidth > 0; })()`);
+    check(logo, 'P&ID logosu cihazdaki programdan yüklenir');
+    // Sembol paneli: yeni semboller listede, Türkçe aramayla bulunur
+    await evaluate(`document.querySelector('#projectList > *').click(); true`);
+    await waitFor(`!document.getElementById('app').classList.contains('hidden') && document.querySelectorAll('.sym-tile').length > 20`, 'P&ID çizim ekranı', 30000);
+    const tiles = await evaluate(`['e.airKnife', 'i.lidRfid'].map((id) => !!document.querySelector('.sym-tile[data-symbol="' + id + '"]'))`);
+    check(tiles.every(Boolean), 'sembol panelinde Kurutma Hava Bıçağı ve RFID Kapak Switchi var', JSON.stringify(tiles));
+    const found = await evaluate(`(() => {
+      const search = (q) => { const el = document.getElementById('symbolSearch'); el.value = q; el.dispatchEvent(new Event('input')); return !!document.querySelector('.sym-tile[data-symbol="e.airKnife"]'); };
+      const out = ['bıçak', 'kurutma bıçağı', 'hava bicagi', 'air knife'].map(search);
+      search('');
+      return out;
+    })()`);
+    check(found.every(Boolean), 'aramada "bıçak", "kurutma bıçağı" hava bıçağını bulur', JSON.stringify(found));
+    const prox = await evaluate(`(() => {
+      const search = (q) => { const el = document.getElementById('symbolSearch'); el.value = q; el.dispatchEvent(new Event('input')); return !!document.querySelector('.sym-tile[data-symbol="i.prox"]'); };
+      const out = ['proximity sensörü', 'pozisyon sensörü', 'endüktif', 'yaklaşım sensörü', 'PRS'].map(search);
+      const tile = (search(''), document.querySelector('.sym-tile[data-symbol="i.prox"] span'));
+      return { out, name: tile && tile.textContent.trim() };
+    })()`);
+    check(prox.out.every(Boolean) && prox.name === 'Proximity Sensörü',
+      'aramada "proximity sensörü", "pozisyon sensörü" proximity sensörünü bulur', JSON.stringify(prox));
+    // Drenaj: sağ panelden tahliye türü ve yazı konumu seçilir, çizimde seçilen yerde görünür
+    const drainUi = await evaluate(`(async () => {
+      const ed = PidApp.editor;
+      ed.startPlacing({ symbol: 'l.drain' });
+      ed.placeAt({ x: 60, y: 235 });
+      const item = ed.selectedItems()[0];
+      const pick = (id, value) => { const el = document.getElementById(id); el.value = value; el.dispatchEvent(new Event('change')); };
+      const fields = { type: !!document.getElementById('fDrainType'), pos: !!document.getElementById('fLabelPos') };
+      pick('fDrainType', 'steam');
+      await new Promise((r) => setTimeout(r, 100));
+      const textOf = () => [...document.querySelectorAll('svg text')].find((t) => t.textContent === 'BUHAR TAHLİYESİ');
+      const below = textOf() && textOf().getBoundingClientRect();
+      pick('fLabelPos', 'right');
+      await new Promise((r) => setTimeout(r, 100));
+      const right = textOf() && textOf().getBoundingClientRect();
+      const body = [...document.querySelectorAll('.hit')].map((h) => h.getBoundingClientRect()).find((b) => Math.abs(b.left + b.width / 2 - (below ? below.left + below.width / 2 : 0)) < 3);
+      return { fields, item: { drainType: item.drainType, labelPos: item.labelPos }, below: !!below, right: !!right,
+        belowUnder: !!(below && body && below.top > body.bottom - 1), rightBeside: !!(right && body && right.left > body.right - 1) };
+    })()`);
+    check(drainUi.fields.type && drainUi.fields.pos && drainUi.item.drainType === 'steam' && drainUi.item.labelPos === 'right',
+      'drenajda "Tahliye türü" ve "Yazı konumu" seçilir, çizime kaydedilir', JSON.stringify(drainUi));
+    check(drainUi.belowUnder && drainUi.rightBeside, 'drenaj yazısı önce altında, "Sağında" seçilince sağında görünür', JSON.stringify(drainUi));
+    if (process.env.PPX_EKRAN) {
+      const shot = await send('Page.captureScreenshot', { format: 'png' });
+      fs.writeFileSync(process.env.PPX_EKRAN, Buffer.from(shot.data, 'base64'));
+    }
+    await evaluate(`PidApp.editor.undo(), PidApp.editor.undo(), PidApp.editor.undo(), true`);
+    // Kayıt bitmeden sayfadan çıkılırsa program (doğru olarak) çıkışı sorar; beklenir
+    await waitFor(`!document.getElementById('saveState').classList.contains('dirty')`, 'çizim kaydı', 20000);
+    await go(`${base}app/P-IDX/P%26ID/codes/cizim.html`);
+    await waitFor(`document.querySelectorAll('#projectList > *').length > 0`, 'P&ID ana ekranı', 30000);
+    await go(`${base}app/PNOMATIKX/PNOMATIK/codes/cizim.html`);
+    await waitFor(`!!document.getElementById('home') && !!window.PpxBoot && PpxBoot.pwa && !!document.querySelector('.home-link')`, 'Pnömatik ana ekranı', 30000);
+    check(true, 'Pnömatik programı açılır');
+
+    /* 5. Tam yenileme hizmet çalışanını atlar: sayfa yine açılmalı */
+    await go(`${base}app/P-IDX/P%26ID/codes/cizim.html`);
+    await waitFor(`document.querySelectorAll('#projectList > *').length > 0`, 'P&ID yeniden', 30000);
+    const misses = site.stats.appMisses;
+    await send('Page.reload', { ignoreCache: true });
+    await sleep(500);
+    await waitFor(`location.pathname.includes('/app/P-IDX/') && document.querySelectorAll('#projectList > *').length > 0`, 'tam yenilemeden sonra P&ID', 30000);
+    check(site.stats.appMisses > misses, 'tam yenileme (Ctrl+Shift+R) sitedeki 404 sayfasına düşer, program yine açılır', `404: ${site.stats.appMisses - misses}`);
+
+    /* 6. Çevrimdışı: site ve GitHub kapalı, program cihazdan açılır */
+    site.setOnline(false);
+    apiDown = true;
+    await go(base);
+    await waitFor(`location.pathname.endsWith('${SITE}app/index.html') && !!document.getElementById('work') && !document.getElementById('work').hidden`, 'çevrimdışı ana ekran', 30000);
+    check(true, 'internet yokken uygulama cihazdan açılır');
+    await go(`${base}app/P-IDX/P%26ID/codes/cizim.html`);
+    await waitFor(`document.querySelectorAll('#projectList > *').length > 0`, 'çevrimdışı P&ID', 30000);
+    check(true, 'internet yokken P&ID projeleri açılır');
+    site.setOnline(true);
+    apiDown = false;
+
+    /* 7. Main'e push edilince yeni sürüm ana ekranda kendiliğinden gelir. Cihaz eski giriş ekranıyla kurulmuş gibi:
+       kayıtta programın deposu yok (11 Kasım'da kurulan cihazlar), depo site adresinden bulunmalı */
+    await evaluate(`(async () => { const c = await caches.open('ppx-kabuk-durum'); const k = location.origin + '${SITE}__durum';
+      const st = await (await c.match(k)).json(); delete st.source; await c.put(k, new Response(JSON.stringify(st))); return true; })()`);
+    code.publish('main', repoFiles('surum-2'));
+    const blobs = code.stats.blobGets;
+    // Son denetimin üstünden 5 dakika geçmiş gibi
+    await evaluate(`localStorage.removeItem('ppx_kabuk_denetim'); true`);
+    await go(base);
+    // Ana ekranda yeni sürüm arkada iner ve sayfa kendiliğinden yenilenir
+    await waitFor(`document.getElementById('surum') && document.getElementById('surum').textContent === 'surum-2'`, 'yeni sürüm', 30000);
+    check(code.stats.blobGets - blobs === 2, 'main\'e push sonrası yeni sürüm ana ekranda kendiliğinden açılır, yalnız değişen iki dosya iner', `${code.stats.blobGets - blobs} dosya indi`);
+
+    /* 7b. Programın içindeyken de bir kez yenilemek yeter: dokunulmamış sayfa yeni sürüm inince kendiliğinden yenilenir.
+       Çizime başlanmışsa (tıklama ya da tuş) sayfa yenilenmez, "Yenile" sorulur. */
+    const pidVersion = `(document.querySelector('meta[name="ppx-test-surum"]') || {}).content`;
+    const reloadFresh = async () => {
+      await evaluate(`window.__eskiSayfa = true; localStorage.removeItem('ppx_kabuk_denetim'); true`);
+      await send('Page.reload', {});
+      await waitFor(`!window.__eskiSayfa && !!window.PpxBoot`, 'sayfa yenilendi', 30000);
+    };
+    await go(`${base}app/P-IDX/P%26ID/codes/cizim.html`);
+    await waitFor(`${pidVersion} === 'surum-2' && document.querySelectorAll('#projectList > *').length > 0`, 'P&ID surum-2', 30000);
+    code.publish('main', repoFiles('surum-3'));
+    await reloadFresh();
+    await waitFor(`${pidVersion} === 'surum-3' && document.querySelectorAll('#projectList > *').length > 0`, 'P&ID kendiliğinden surum-3', 30000);
+    check(true, 'P&ID açıkken push edilen sürüm tek yenilemeyle gelir (dokunulmamış sayfa kendiliğinden yenilenir)');
+    code.publish('main', repoFiles('surum-4'));
+    await reloadFresh();
+    await evaluate(`window.dispatchEvent(new PointerEvent('pointerdown')); true`);
+    await waitFor(`!!document.getElementById('ppxUpdated')`, '"Yenile" kutusu', 30000);
+    const stillOld = await evaluate(pidVersion);
+    await evaluate(`document.querySelector('#ppxUpdated button').click(); true`);
+    await waitFor(`${pidVersion} === 'surum-4'`, '"Yenile" ile surum-4', 30000);
+    check(stillOld === 'surum-3', 'çizime başlanmışsa sayfa kendiliğinden yenilenmez, "Yenile" sorulur ve yeni sürümü açar', stillOld);
+    await go(base);
+
+    /* 8a. Program verilerini güncelle: klasör seçilmez, indirilen programın kataloğu kullanılır */
+    await waitFor(`/GitHub deposu/.test(document.getElementById('dbInfo').textContent)`, 'ana ekran bağlandı', 30000);
+    await evaluate(`document.getElementById('updateData').click(); true`);
+    await waitFor(`/güncel|farklı|bulunamadı/.test(document.getElementById('result').textContent)`, 'program verileri karşılaştırması', 30000);
+    const dataResult = await evaluate(`document.getElementById('result').textContent`);
+    check(/güncel \(sürüm \d+\)/.test(dataResult), 'program verilerini güncelle klasör seçmeden çalışır', dataResult);
+
+    /* 8b. Uygulama açıkken anahtar iptal edilirse eşitleme giriş ekranına götürür */
+    const revoke = (value) => { hub.hooks.fail = value; code.hooks.fail = value; };
+    revoke(() => ({ status: 401, json: { message: 'Bad credentials' }, headers: {} }));
+    await evaluate(`document.getElementById('syncNow').click(); true`);
+    await waitFor(`location.href === '${base}' && ${visible('login')}`, 'açık uygulamada iptal', 30000);
+    check(true, 'açık uygulamada anahtar geçersizleşince giriş ekranına dönülür');
+    await evaluate(`document.getElementById('token').value = 'gizli-anahtar'; true`);
+    revoke(null);
+    await evaluate(`document.getElementById('login').requestSubmit(); true`);
+    await waitFor(`location.pathname.endsWith('${SITE}app/index.html') && /GitHub deposu/.test(document.getElementById('dbInfo').textContent)`, 'iptal sonrası yeniden giriş', 30000);
+
+    /* 8. Anahtar iptal edilince (bir dakikadan sonra yeniden açılışta) program cihazdan silinir */
+    revoke(() => ({ status: 401, json: { message: 'Bad credentials' }, headers: {} }));
+    await evaluate(`sessionStorage.removeItem('ppx_kilit'); true`);
+    await go(base);
+    await waitFor(`${visible('login')} && /geçersiz/.test(document.getElementById('loginMsg').textContent)`, 'iptalden sonra giriş ekranı', 30000);
+    const afterRevoke = await evaluate(`(async () => ({ caches: (await caches.keys()).filter((k) => k.startsWith('ppx-program-')).length,
+      app: await fetch('app/ortak/ppx-db.js').then((r) => r.status), settings: localStorage.getItem('ppx_ayarlar') }))()`);
+    check(afterRevoke.caches === 0 && afterRevoke.app === 404, 'iptal edilen anahtarla program cihazdan silinir', JSON.stringify(afterRevoke));
+    check(!/gizli-anahtar/.test(afterRevoke.settings || ''), 'iptal edilen anahtar unutulur, depo adı kalır', afterRevoke.settings);
+    revoke(null);
+
+    /* 9. Yeniden giriş ve çıkış: program, anahtar ve veri kopyası silinir */
+    await evaluate(`document.getElementById('token').value = 'gizli-anahtar'; document.getElementById('login').requestSubmit(); true`);
+    await waitFor(`location.pathname.endsWith('${SITE}app/index.html') && /GitHub deposu/.test(document.getElementById('dbInfo').textContent)`, 'yeniden giriş', 30000);
+    await evaluate(`document.getElementById('disconnect').click(); true`);
+    await waitFor(`location.href === '${base}' && /Çıkış yapıldı/.test(document.getElementById('loginMsg').textContent)`, 'çıkış', 30000);
+    const afterLogout = await evaluate(`(async () => ({ caches: (await caches.keys()).filter((k) => k.startsWith('ppx-program-')).length,
+      dbs: (await indexedDB.databases()).map((d) => d.name), settings: localStorage.getItem('ppx_ayarlar') }))()`);
+    check(afterLogout.caches === 0 && !afterLogout.dbs.includes('ppx-veri') && !/gizli-anahtar/.test(afterLogout.settings || ''), 'çıkışta program, anahtar ve veri kopyası silinir', JSON.stringify(afterLogout));
+    await go(`${base}app/index.html`);
+    await waitFor(`location.href === '${base}' && ${visible('login')}`, 'çıkıştan sonra giriş ekranı');
+    check(true, 'çıkıştan sonra program adresi giriş ekranına döner');
+
+    check(errors.length === 0, 'sayfalarda betik hatası yok', errors.slice(0, 5).join('\n    '));
+  } catch (e) {
+    check(false, e.message);
+    if (errors.length) console.log(`  Betik hataları:\n    ${errors.slice(0, 5).join('\n    ')}`);
+  } finally {
+    client.close();
+    browser.proc.kill();
+    site.server.close();
+    await sleep(500);
+    try { fs.rmSync(browser.profile, { recursive: true, force: true }); } catch { /* tarayıcı dosyaları bırakana kadar kalabilir */ }
+  }
+  console.log(failures ? `\n${failures} denetim başarısız` : '\nTüm denetimler geçti');
+  process.exit(failures ? 1 : 0);
+}
+
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});
