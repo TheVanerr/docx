@@ -478,6 +478,9 @@ const BomxApp = (() => {
     bindGlobalKeys();
     onStatus(state.db.status());
     await showHome(U.pref('sekme', 'projects'));
+    // Doğrudan bağlantı (DOCX Makine sayfası): ?proje=<proje klasörü> o projeyi açar
+    const istenen = new URLSearchParams(location.search).get('proje');
+    if (istenen) await openProject(istenen);
     loadPpx();
   }
 

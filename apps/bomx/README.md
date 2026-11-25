@@ -26,6 +26,8 @@ GitHub'a bağlanmadan denemek için ekrandaki **Şimdilik yalnız bu bilgisayard
 
 Anahtarın süresi dolmadan üç hafta önce ana ekranda uyarı çıkar (GitHub bitiş tarihini bildiriyorsa). Süresi dolan ya da iptal edilen anahtarda kayıtlar bu bilgisayarda bekler; **Anahtarı yenile** ile yeni anahtar girilince gönderilir.
 
+Doğrudan bağlantı: `index.html?proje=<proje klasörü>` o projeyi açar (DOCX Makine sayfası belge kartlarında kullanır).
+
 ## Kullanım
 
 ### 1. Komponent kütüphanesi (ana ekran → Komponentler)

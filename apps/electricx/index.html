@@ -198,8 +198,12 @@
 
       /* ── Programlar ── */
 
-      function goster(ad) {
+      // Adres: #<program>; #<program>/<iç adres> programın kendi adresine geçer (ör. #kutu/p/<proje>: DOCX Makine sayfası)
+      function goster(adres) {
+        const [bas, ...kalan] = String(adres || '').split('/');
+        let ad = bas;
         if (!PROGRAMLAR[ad]) ad = 'ana';
+        const ic = ad !== 'ana' ? kalan.join('/') : '';
         aktif = ad;
         $('ana').hidden = ad !== 'ana';
         for (const b of sekmeler) b.setAttribute('aria-selected', b.dataset.program === ad ? 'true' : 'false');
@@ -207,10 +211,13 @@
           const f = document.createElement('iframe');
           f.title = PROGRAMLAR[ad].ad;
           f.setAttribute('allow', 'clipboard-read *; clipboard-write *; fullscreen *');
-          f.src = PROGRAMLAR[ad].url;
+          f.src = PROGRAMLAR[ad].url + (ic ? `#${ic}` : '');
           f.dataset.program = ad;
           $('sahne').appendChild(f);
           cerceveler.set(ad, f);
+        } else if (ic) {
+          const f = cerceveler.get(ad);
+          try { f.contentWindow.location.hash = ic; } catch (e) { f.src = `${PROGRAMLAR[ad].url}#${ic}`; }
         }
         for (const [k, f] of cerceveler) f.classList.toggle('acik', k === ad);
         if (ad === 'ana') {

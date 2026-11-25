@@ -21,6 +21,8 @@ Başka bir bilgisayarda: uygulamayı yukarıdaki adresten kurun (ya da program k
 
 GitHub'a bağlanmadan denemek için ekrandaki **Şimdilik yalnız bu bilgisayarda kullan** seçilir; sonradan bağlanınca yapılanlar depoya gönderilir.
 
+Adres: `#kutu`, `#etiket`, `#sema` programı açar; `#kutu/p/<proje klasörü>` malzeme listesinde o projeyi açar (DOCX Makine sayfası belge kartlarında kullanır).
+
 ## Programlar
 
 Üstteki sekmeler programlar arasında geçer. Programlar açık kalır: şemayı açıp etikete baksanız da PDF kapanmaz.
